@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI简历优化器 - 智能简历分析与优化</title>
+<meta name="description" content="免费AI简历优化工具，基于DeepSeek大模型，一键分析简历评分并生成优化建议">
+<meta name="keywords" content="AI简历,简历优化,简历分析,DeepSeek,免费工具">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-primary:#0a0a0f;
+  --bg-secondary:#12121a;
+  --bg-card:#1a1a2e;
+  --bg-input:#16162a;
+  --border-color:#2a2a4a;
+  --text-primary:#e8e8f0;
+  --text-secondary:#9898b8;
+  --text-muted:#6868a0;
+  --accent-blue:#4f7df9;
+  --accent-purple:#9b59f5;
+  --accent-gradient:linear-gradient(135deg,#4f7df9 0%,#9b59f5 100%);
+  --accent-gradient-h:linear-gradient(135deg,#6b93ff 0%,#b77aff 100%);
+  --score-green:#4ade80;
+  --score-yellow:#facc15;
+  --score-orange:#fb923c;
+  --score-red:#f87171;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --transition:0.25s cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* ===== Background Effects ===== */
+body::before{
+  content:'';position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 600px 400px at 15% 20%, rgba(79,125,249,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 85% 70%, rgba(155,89,245,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 800px 600px at 50% 50%, rgba(79,125,249,0.03) 0%, transparent 60%);
+}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 24px}
+
+/* ===== Header ===== */
+.header{
+  padding:20px 0;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border-color);margin-bottom:32px;
+}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text-primary)}
+.logo-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--accent-gradient);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;color:#fff;
+  box-shadow:0 2px 12px rgba(79,125,249,0.3);
+}
+.logo-text{font-size:20px;font-weight:700;letter-spacing:-0.5px}
+.logo-text span{background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-actions{display:flex;gap:8px}
+
+.btn-icon{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  border:1px solid var(--border-color);background:var(--bg-card);
+  color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+}
+.btn-icon:hover{border-color:var(--accent-blue);color:var(--accent-blue);background:rgba(79,125,249,0.08)}
+
+/* ===== Main Layout ===== */
+.main-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  min-height:calc(100vh - 200px);
+}
+@media(max-width:900px){
+  .main-grid{grid-template-columns:1fr;gap:16px}
+}
+
+/* ===== Card ===== */
+.card{
+  background:var(--bg-card);border:1px solid var(--border-color);
+  border-radius:var(--radius);padding:24px;
+  box-shadow:var(--shadow);transition:var(--transition);
+}
+.card:hover{border-color:rgba(79,125,249,0.2)}
+.card-title{
+  font-size:16px;font-weight:600;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-title .icon{font-size:18px}
+
+/* ===== Form Controls ===== */
+.form-group{margin-bottom:16px}
+.form-label{
+  display:block;font-size:13px;font-weight:500;
+  color:var(--text-secondary);margin-bottom:6px;
+}
+.input,.select,.textarea{
+  width:100%;padding:10px 14px;
+  background:var(--bg-input);border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);color:var(--text-primary);
+  font-size:14px;font-family:inherit;transition:var(--transition);
+  outline:none;
+}
+.input:focus,.select:focus,.textarea:focus{
+  border-color:var(--accent-blue);
+  box-shadow:0 0 0 3px rgba(79,125,249,0.12);
+}
+.textarea{
+  min-height:320px;resize:vertical;line-height:1.7;
+  font-size:13.5px;
+}
+.select{
+  appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239898b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;
+}
+.select option{background:var(--bg-card);color:var(--text-primary)}
+
+/* ===== API Key Row ===== */
+.api-key-row{
+  display:flex;gap:8px;align-items:flex-end;
+}
+.api-key-row .input{flex:1}
+.api-key-toggle{
+  padding:10px 12px;background:var(--bg-input);border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);color:var(--text-secondary);cursor:pointer;
+  font-size:13px;transition:var(--transition);white-space:nowrap;
+}
+.api-key-toggle:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+
+/* ===== Primary Button ===== */
+.btn-primary{
+  width:100%;padding:14px 24px;border:none;border-radius:var(--radius-sm);
+  background:var(--accent-gradient);color:#fff;font-size:15px;font-weight:600;
+  cursor:pointer;transition:var(--transition);letter-spacing:0.5px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.btn-primary:hover:not(:disabled){background:var(--accent-gradient-h);transform:translateY(-1px);box-shadow:0 4px 20px rgba(79,125,249,0.35)}
+.btn-primary:active:not(:disabled){transform:translateY(0)}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed}
+
+/* ===== Loading ===== */
+.btn-primary .spinner{
+  display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);
+  border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;
+}
+.btn-primary.loading .spinner{display:block}
+.btn-primary.loading .btn-text{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loading-overlay{
+  display:none;position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(10,10,15,0.85);border-radius:var(--radius);
+  z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+}
+.loading-overlay.active{display:flex}
+.loading-dots{display:flex;gap:6px}
+.loading-dots span{
+  width:10px;height:10px;border-radius:50%;background:var(--accent-blue);
+  animation:dotPulse 1.4s ease-in-out infinite;
+}
+.loading-dots span:nth-child(2){animation-delay:0.2s;background:var(--accent-purple)}
+.loading-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dotPulse{0%,80%,100%{transform:scale(0.4);opacity:0.4}40%{transform:scale(1);opacity:1}}
+.loading-text{font-size:14px;color:var(--text-secondary);animation:fadeInOut 2s ease-in-out infinite}
+@keyframes fadeInOut{0%,100%{opacity:0.5}50%{opacity:1}}
+
+/* ===== Results ===== */
+.result-panel{position:relative}
+.result-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:400px;color:var(--text-muted);text-align:center;gap:12px;
+}
+.result-placeholder .icon{font-size:48px;opacity:0.5}
+.result-placeholder p{font-size:14px;line-height:1.8}
+
+.result-content{display:none}
+.result-content.active{display:block}
+
+/* Score Section */
+.score-section{
+  text-align:center;padding:24px 0 20px;
+  border-bottom:1px solid var(--border-color);margin-bottom:20px;
+}
+.score-ring{
+  position:relative;width:120px;height:120px;margin:0 auto 12px;
+}
+.score-ring svg{transform:rotate(-90deg);width:120px;height:120px}
+.score-ring .ring-bg{fill:none;stroke:var(--bg-input);stroke-width:8}
+.score-ring .ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease,stroke 0.5s}
+.score-number{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:32px;font-weight:700;
+}
+.score-label{font-size:14px;color:var(--text-secondary)}
+
+/* Dimension Scores */
+.dimensions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.dim-item{
+  background:var(--bg-input);border-radius:var(--radius-sm);padding:12px;
+  border:1px solid var(--border-color);
+}
+.dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dim-name{font-size:13px;color:var(--text-secondary)}
+.dim-value{font-size:14px;font-weight:600}
+.dim-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.dim-bar-fill{height:100%;border-radius:2px;transition:width 0.8s ease}
+
+/* Suggestions */
+.suggestions{margin-bottom:20px}
+.suggestions-title{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.suggestion-item{
+  padding:10px 12px;margin-bottom:6px;
+  background:var(--bg-input);border-radius:var(--radius-sm);
+  border-left:3px solid var(--accent-purple);
+  font-size:13px;line-height:1.7;color:var(--text-secondary);
+}
+.suggestion-item strong{color:var(--text-primary)}
+
+/* Optimized Resume */
+.optimized-section{margin-bottom:16px}
+.optimized-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.optimized-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.btn-copy{
+  padding:6px 14px;border-radius:var(--radius-sm);
+  border:1px solid var(--border-color);background:var(--bg-input);
+  color:var(--text-secondary);font-size:12px;cursor:pointer;
+  transition:var(--transition);display:flex;align-items:center;gap:4px;
+}
+.btn-copy:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.btn-copy.copied{border-color:var(--score-green);color:var(--score-green)}
+
+.optimized-text{
+  background:var(--bg-input);border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);padding:16px;
+  font-size:13px;line-height:1.8;color:var(--text-secondary);
+  max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;
+}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--bg-card);border:1px solid var(--border-color);
+  padding:12px 24px;border-radius:var(--radius-sm);
+  font-size:13px;color:var(--text-primary);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  transition:transform 0.3s ease,opacity 0.3s ease;opacity:0;z-index:999;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ===== Footer ===== */
+.footer{
+  text-align:center;padding:24px 0;margin-top:32px;
+  border-top:1px solid var(--border-color);
+  font-size:13px;color:var(--text-muted);
+}
+.footer span{background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:600}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* ===== Animations ===== */
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:slideUp 0.5s ease forwards}
+
+/* ===== Mobile ===== */
+@media(max-width:900px){
+  .header{flex-direction:column;gap:12px;align-items:flex-start}
+  .card{padding:16px}
+  .textarea{min-height:200px}
+  .dimensions{grid-template-columns:1fr}
+  .score-ring{width:100px;height:100px}
+  .score-ring svg{width:100px;height:100px}
+  .score-number{font-size:26px}
+}
+@media(max-width:480px){
+  .container{padding:0 12px}
+  .card{padding:14px}
+  .api-key-row{flex-direction:column}
+  .api-key-toggle{width:100%;text-align:center}
+}
+
+/* ===== Share Modal ===== */
+.modal-overlay{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.7);z-index:100;
+  align-items:center;justify-content:center;
+}
+.modal-overlay.active{display:flex}
+.modal{
+  background:var(--bg-card);border:1px solid var(--border-color);
+  border-radius:var(--radius);padding:24px;max-width:400px;width:90%;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+}
+.modal h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.modal p{font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.7}
+.modal-close{
+  width:100%;padding:10px;border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);background:var(--bg-input);
+  color:var(--text-primary);cursor:pointer;font-size:14px;
+  transition:var(--transition);
+}
+.modal-close:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+
+/* ===== Sample Hint ===== */
+.sample-hint{
+  margin-top:8px;font-size:12px;color:var(--text-muted);
+  cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:4px;
+}
+.sample-hint:hover{color:var(--accent-blue)}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <a class="logo" href="#">
+      <div class="logo-icon">R</div>
+      <div class="logo-text">AI<span>简历优化器</span></div>
+    </a>
+    <div class="header-actions">
+      <button class="btn-icon" id="shareBtn" title="分享">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <div class="main-grid">
+    <!-- Left: Input -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📝</span> 粘贴你的简历</div>
+
+      <div class="form-group">
+        <label class="form-label">简历内容</label>
+        <textarea class="textarea" id="resumeInput" placeholder="在此粘贴你的简历全文...&#10;&#10;支持纯文本格式，包含个人基本信息、教育背景、工作经历、项目经验、技能特长等"></textarea>
+        <span class="sample-hint" id="sampleHint">📋 点击填入示例简历</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">目标岗位</label>
+        <select class="select" id="positionSelect">
+          <option value="前端开发">前端开发</option>
+          <option value="后端开发">后端开发</option>
+          <option value="全栈开发">全栈开发</option>
+          <option value="产品经理">产品经理</option>
+          <option value="运营">运营</option>
+          <option value="设计">设计</option>
+          <option value="通用" selected>通用</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">API Key（可选）</label>
+        <div class="api-key-row">
+          <input class="input" id="apiKeyInput" type="password" placeholder="留空使用共享额度，或填入你的硅基流动Key">
+          <button class="api-key-toggle" id="keyToggle" title="显示/隐藏Key">👁</button>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">
+          免费注册获取Key：<a href="https://cloud.siliconflow.cn" target="_blank" style="color:var(--accent-blue);text-decoration:none">siliconflow.cn</a>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="analyzeBtn">
+        <span class="spinner"></span>
+        <span class="btn-text">🚀 AI 分析优化</span>
+      </button>
+    </div>
+
+    <!-- Right: Results -->
+    <div class="card result-panel">
+      <div class="card-title"><span class="icon">🎯</span> 分析结果</div>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text" id="loadingText">AI 正在深度分析你的简历...</div>
+      </div>
+
+      <!-- Placeholder -->
+      <div class="result-placeholder" id="resultPlaceholder">
+        <div class="icon">✨</div>
+        <p>粘贴简历并点击分析<br>AI 将为你生成专业评分与优化建议</p>
+      </div>
+
+      <!-- Result Content -->
+      <div class="result-content" id="resultContent">
+        <!-- Overall Score -->
+        <div class="score-section">
+          <div class="score-ring">
+            <svg viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="ring-fg" id="scoreRing" cx="60" cy="60" r="52"
+                stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+            </svg>
+            <div class="score-number" id="scoreNumber">0</div>
+          </div>
+          <div class="score-label">综合评分</div>
+        </div>
+
+        <!-- Dimension Scores -->
+        <div class="dimensions" id="dimensions">
+          <div class="dim-item">
+            <div class="dim-header"><span class="dim-name">内容完整性</span><span class="dim-value" id="dim1">0</span></div>
+            <div class="dim-bar"><div class="dim-bar-fill" id="dimBar1" style="width:0%"></div></div>
+          </div>
+          <div class="dim-item">
+            <div class="dim-header"><span class="dim-name">关键词匹配</span><span class="dim-value" id="dim2">0</span></div>
+            <div class="dim-bar"><div class="dim-bar-fill" id="dimBar2" style="width:0%"></div></div>
+          </div>
+          <div class="dim-item">
+            <div class="dim-header"><span class="dim-name">格式规范</span><span class="dim-value" id="dim3">0</span></div>
+            <div class="dim-bar"><div class="dim-bar-fill" id="dimBar3" style="width:0%"></div></div>
+          </div>
+          <div class="dim-item">
+            <div class="dim-header"><span class="dim-name">亮点突出</span><span class="dim-value" id="dim4">0</span></div>
+            <div class="dim-bar"><div class="dim-bar-fill" id="dimBar4" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="suggestions">
+          <div class="suggestions-title">💡 优化建议</div>
+          <div id="suggestionsList"></div>
+        </div>
+
+        <!-- Optimized Resume -->
+        <div class="optimized-section">
+          <div class="optimized-header">
+            <div class="optimized-title">📄 优化后的简历</div>
+            <button class="btn-copy" id="copyBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>复制</span>
+            </button>
+          </div>
+          <div class="optimized-text" id="optimizedText"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>由AI驱动 · 完全免费</span> &nbsp;|&nbsp; Powered by DeepSeek-V3 &amp; SiliconFlow
+  </footer>
+</div>
+
+<!-- Share Modal -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal">
+    <h3>🔗 分享AI简历优化器</h3>
+    <p>将这个免费工具分享给你的朋友，帮助更多人优化简历！</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <input class="input" id="shareUrl" readonly style="flex:1;font-size:12px">
+      <button class="btn-copy" id="copyLinkBtn" style="white-space:nowrap">复制链接</button>
+    </div>
+    <button class="modal-close" id="modalClose">关闭</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== DOM =====
+  const resumeInput = document.getElementById('resumeInput');
+  const positionSelect = document.getElementById('positionSelect');
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const keyToggle = document.getElementById('keyToggle');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const loadingText = document.getElementById('loadingText');
+  const resultPlaceholder = document.getElementById('resultPlaceholder');
+  const resultContent = document.getElementById('resultContent');
+  const scoreRing = document.getElementById('scoreRing');
+  const scoreNumber = document.getElementById('scoreNumber');
+  const suggestionsList = document.getElementById('suggestionsList');
+  const optimizedText = document.getElementById('optimizedText');
+  const copyBtn = document.getElementById('copyBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const shareModal = document.getElementById('shareModal');
+  const shareUrl = document.getElementById('shareUrl');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const modalClose = document.getElementById('modalClose');
+  const sampleHint = document.getElementById('sampleHint');
+  const toast = document.getElementById('toast');
+
+  // ===== Constants =====
+  const API_URL = 'https://api.siliconflow.cn/v1/chat/completions';
+  const MODEL = 'deepseek-ai/DeepSeek-V3';
+  const CIRCUMFERENCE = 2 * Math.PI * 52; // ~326.73
+  const LOADING_MESSAGES = [
+    'AI 正在深度分析你的简历...',
+    '正在评估内容完整性...',
+    '正在匹配岗位关键词...',
+    '正在检查格式规范...',
+    '正在挖掘亮点与优势...',
+    '正在生成优化建议...',
+    '正在润色优化简历...',
+  ];
+
+  // ===== Sample Resume =====
+  const SAMPLE_RESUME = `张三 | 前端开发工程师
+手机：138xxxx6789 | 邮箱：zhangsan@email.com | 城市：北京
+
+【个人简介】
+3年前端开发经验，熟悉Vue和React框架，有多个项目实战经验。
+
+【工作经历】
+ABC科技公司 | 前端开发工程师 | 2022.06 - 至今
+- 负责公司官网和后台管理系统的开发
+- 参与项目需求评审和技术方案设计
+- 使用Vue3 + Element Plus开发后台管理页面
+
+XYZ互联网公司 | 初级前端开发 | 2020.07 - 2022.05
+- 参与电商小程序的前端开发
+- 使用React开发内部工具
+
+【教育背景】
+某某大学 | 计算机科学与技术 | 本科 | 2016.09 - 2020.06
+
+【技能】
+Vue、React、JavaScript、CSS、HTML、Git`;
+
+  // ===== Toast =====
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // ===== Key Toggle =====
+  keyToggle.addEventListener('click', () => {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    keyToggle.textContent = isPassword ? '🙈' : '👁';
+  });
+
+  // ===== Sample Resume =====
+  sampleHint.addEventListener('click', () => {
+    resumeInput.value = SAMPLE_RESUME;
+    positionSelect.value = '前端开发';
+    showToast('已填入示例简历');
+  });
+
+  // ===== Share =====
+  shareBtn.addEventListener('click', () => {
+    shareUrl.value = window.location.href;
+    shareModal.classList.add('active');
+  });
+  modalClose.addEventListener('click', () => shareModal.classList.remove('active'));
+  shareModal.addEventListener('click', (e) => { if (e.target === shareModal) shareModal.classList.remove('active'); });
+  copyLinkBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(shareUrl.value).then(() => {
+      copyLinkBtn.classList.add('copied');
+      copyLinkBtn.querySelector('span').textContent = '已复制';
+      setTimeout(() => { copyLinkBtn.classList.remove('copied'); copyLinkBtn.querySelector('span').textContent = '复制链接'; }, 2000);
+    });
+  });
+
+  // ===== Score Color =====
+  function getScoreColor(score) {
+    if (score >= 80) return 'var(--score-green)';
+    if (score >= 60) return 'var(--score-yellow)';
+    if (score >= 40) return 'var(--score-orange)';
+    return 'var(--score-red)';
+  }
+
+  // ===== Animate Score =====
+  function animateScore(score) {
+    const color = getScoreColor(score);
+    const offset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
+    scoreRing.style.stroke = color;
+    scoreRing.style.strokeDashoffset = offset;
+    scoreNumber.style.color = color;
+
+    // Animate number
+    let current = 0;
+    const duration = 1000;
+    const start = performance.now();
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      current = Math.round(eased * score);
+      scoreNumber.textContent = current;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ===== Animate Dimension Bars =====
+  function animateDimensions(scores) {
+    const dims = [
+      { value: scores.completeness, bar: 'dimBar1', label: 'dim1' },
+      { value: scores.keywords, bar: 'dimBar2', label: 'dim2' },
+      { value: scores.format, bar: 'dimBar3', label: 'dim3' },
+      { value: scores.highlights, bar: 'dimBar4', label: 'dim4' },
+    ];
+    dims.forEach((d, i) => {
+      setTimeout(() => {
+        const val = Math.min(100, Math.max(0, d.value));
+        document.getElementById(d.label).textContent = val;
+        const bar = document.getElementById(d.bar);
+        bar.style.width = val + '%';
+        bar.style.background = getScoreColor(val);
+        document.getElementById(d.label).style.color = getScoreColor(val);
+      }, i * 150);
+    });
+  }
+
+  // ===== Build Prompt =====
+  function buildPrompt(resume, position) {
+    return `你是一位资深的简历优化专家和HR顾问。请对以下简历进行深度分析，目标岗位是「${position}」。
+
+请严格按照以下JSON格式返回分析结果（不要返回其他任何内容，只返回纯JSON）：
+
+{
+  "overall_score": <综合评分0-100的整数>,
+  "dimensions": {
+    "completeness": <内容完整性评分0-100的整数>,
+    "keywords": <关键词匹配评分0-100的整数>,
+    "format": <格式规范评分0-100的整数>,
+    "highlights": <亮点突出评分0-100的整数>
+  },
+  "suggestions": [
+    "<具体优化建议1，包含问题说明和改进方向>",
+    "<具体优化建议2>",
+    "<具体优化建议3>",
+    "<具体优化建议4>",
+    "<具体优化建议5>"
+  ],
+  "optimized_resume": "<优化后的完整简历文本，使用换行符\\n分隔>"
+}
+
+评分标准：
+- 内容完整性：是否涵盖个人简介、工作经历、项目经验、教育背景、技能特长等必要模块，各模块内容是否充实
+- 关键词匹配：简历中是否包含目标岗位「${position}」的核心技能关键词、行业术语、热门技术栈
+- 格式规范：结构是否清晰、时间线是否完整、描述是否使用STAR法则、是否有量化成果
+- 亮点突出：是否有差异化竞争优势、成果是否可量化、是否有超预期表现
+
+优化要求：
+1. 优化后的简历应保留原文核心信息，不编造虚假经历
+2. 使用更专业的表达方式，强化成果导向描述
+3. 补充岗位「${position}」相关关键词
+4. 改善格式结构，使层次更清晰
+5. 每条建议要具体可操作
+
+以下是待分析的简历：
+
+---
+${resume}
+---
+
+请返回纯JSON，不要包含markdown代码块标记。`;
+  }
+
+  // ===== Parse Response =====
+  function parseResponse(text) {
+    // Try to extract JSON from the response
+    let jsonStr = text.trim();
+    // Remove markdown code block if present
+    if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+    }
+    // Try to find JSON object
+    const match = jsonStr.match(/\{[\s\S]*\}/);
+    if (match) {
+      jsonStr = match[0];
+    }
+    try {
+      return JSON.parse(jsonStr);
+    } catch (e) {
+      console.error('JSON parse error:', e, 'Raw:', text);
+      return null;
+    }
+  }
+
+  // ===== Display Results =====
+  function displayResults(data) {
+    resultPlaceholder.style.display = 'none';
+    resultContent.classList.add('active');
+    resultContent.classList.add('animate-in');
+
+    // Overall score
+    const overall = Math.min(100, Math.max(0, data.overall_score || 0));
+    animateScore(overall);
+
+    // Dimensions
+    const dims = data.dimensions || {};
+    animateDimensions({
+      completeness: dims.completeness || 0,
+      keywords: dims.keywords || 0,
+      format: dims.format || 0,
+      highlights: dims.highlights || 0,
+    });
+
+    // Suggestions
+    suggestionsList.innerHTML = '';
+    const suggestions = data.suggestions || [];
+    suggestions.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'suggestion-item';
+      div.style.animationDelay = (i * 0.1) + 's';
+      div.innerHTML = s;
+      suggestionsList.appendChild(div);
+    });
+
+    // Optimized resume
+    const optimized = data.optimized_resume || '（未生成优化简历）';
+    optimizedText.textContent = optimized.replace(/\\n/g, '\n');
+  }
+
+  // ===== Loading Animation =====
+  let loadingInterval;
+  function startLoading() {
+    let idx = 0;
+    loadingOverlay.classList.add('active');
+    loadingText.textContent = LOADING_MESSAGES[0];
+    loadingInterval = setInterval(() => {
+      idx = (idx + 1) % LOADING_MESSAGES.length;
+      loadingText.textContent = LOADING_MESSAGES[idx];
+    }, 3000);
+  }
+  function stopLoading() {
+    clearInterval(loadingInterval);
+    loadingOverlay.classList.remove('active');
+  }
+
+  // ===== API Call =====
+  async function callAPI(resume, position, apiKey) {
+    const prompt = buildPrompt(resume, position);
+    const body = {
+      model: MODEL,
+      messages: [
+        { role: 'system', content: '你是一位专业的简历优化专家。请始终以纯JSON格式回复，不包含markdown标记。' },
+        { role: 'user', content: prompt }
+      ],
+      max_tokens: 4096,
+      temperature: 0.7,
+      stream: false,
+    };
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey,
+    };
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      let errMsg = 'API请求失败';
+      try {
+        const errJson = JSON.parse(errText);
+        errMsg = errJson.message || errJson.error?.message || errMsg;
+      } catch {}
+      throw new Error(errMsg + ' (HTTP ' + response.status + ')');
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) throw new Error('API返回内容为空');
+    return content;
+  }
+
+  // ===== Analyze =====
+  async function analyze() {
+    const resume = resumeInput.value.trim();
+    if (!resume) {
+      showToast('请先粘贴简历内容');
+      resumeInput.focus();
+      return;
+    }
+    if (resume.length < 30) {
+      showToast('简历内容太短，请粘贴完整简历');
+      resumeInput.focus();
+      return;
+    }
+
+    const position = positionSelect.value;
+    const apiKey = apiKeyInput.value.trim();
+
+    analyzeBtn.classList.add('loading');
+    analyzeBtn.disabled = true;
+    startLoading();
+
+    // Reset previous results
+    scoreRing.style.strokeDashoffset = CIRCUMFERENCE;
+    scoreNumber.textContent = '0';
+
+    try {
+      // If no API key provided, show hint
+      if (!apiKey) {
+        showToast('💡 建议填入你的API Key以获得更稳定的服务');
+      }
+
+      const rawKey = apiKey || 'sk-placeholder-needs-real-key';
+      let result;
+      try {
+        result = await callAPI(resume, position, rawKey);
+      } catch (e) {
+        if (!apiKey) {
+          // If using placeholder key failed, prompt user
+          throw new Error('请填入你的硅基流动API Key后重试。免费注册：siliconflow.cn');
+        }
+        throw e;
+      }
+
+      const data = parseResponse(result);
+      if (!data) {
+        throw new Error('AI返回格式异常，请重试');
+      }
+
+      stopLoading();
+      displayResults(data);
+      showToast('✅ 分析完成！');
+
+    } catch (err) {
+      stopLoading();
+      console.error('Analysis error:', err);
+      showToast('❌ ' + err.message);
+      resultPlaceholder.style.display = 'flex';
+      resultPlaceholder.innerHTML = `
+        <div class="icon">⚠️</div>
+        <p style="color:var(--score-orange)">${err.message}</p>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:8px">
+          请确认API Key正确，或稍后重试
+        </p>
+      `;
+    } finally {
+      analyzeBtn.classList.remove('loading');
+      analyzeBtn.disabled = false;
+    }
+  }
+
+  analyzeBtn.addEventListener('click', analyze);
+
+  // ===== Copy Optimized Resume =====
+  copyBtn.addEventListener('click', () => {
+    const text = optimizedText.textContent;
+    if (!text || text === '（未生成优化简历）') {
+      showToast('暂无可复制的内容');
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.classList.add('copied');
+      copyBtn.querySelector('span').textContent = '已复制';
+      showToast('✅ 简历已复制到剪贴板');
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyBtn.querySelector('span').textContent = '复制';
+      }, 2000);
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('✅ 简历已复制到剪贴板');
+    });
+  });
+
+  // ===== Keyboard Shortcut =====
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      analyze();
+    }
+  });
+
+  // ===== Init: Restore API Key from localStorage =====
+  const savedKey = localStorage.getItem('sf_api_key');
+  if (savedKey) apiKeyInput.value = savedKey;
+
+  // Save API Key on change
+  apiKeyInput.addEventListener('change', () => {
+    const key = apiKeyInput.value.trim();
+    if (key) {
+      localStorage.setItem('sf_api_key', key);
+    } else {
+      localStorage.removeItem('sf_api_key');
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
