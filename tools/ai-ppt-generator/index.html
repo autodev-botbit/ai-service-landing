@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI PPT生成器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0c14;--bg2:#14141f;--card:#1a1a2e;--card2:#22223a;
+  --accent:#ff6b35;--accent2:#ff3c5f;--accent-glow:rgba(255,107,53,.25);
+  --text:#eee;--text2:#aaa;--text3:#666;--border:#2a2a44;
+  --radius:12px;--shadow:0 8px 32px rgba(0,0,0,.4);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.bg-decor{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.12}
+.bg-decor .orb:nth-child(1){width:500px;height:500px;background:var(--accent);top:-10%;right:-5%}
+.bg-decor .orb:nth-child(2){width:400px;height:400px;background:var(--accent2);bottom:-10%;left:-5%}
+.bg-decor .orb:nth-child(3){width:300px;height:300px;background:#ff8c42;top:50%;left:40%;transform:translate(-50%,-50%)}
+
+.app{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:16px}
+
+/* Header */
+.header{text-align:center;padding:24px 0 20px;position:relative}
+.header h1{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2),#ff8c42);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px}
+.header p{color:var(--text2);font-size:.95rem;margin-top:6px}
+
+/* Main layout */
+.main{display:flex;gap:20px;min-height:calc(100vh - 140px);align-items:flex-start}
+
+/* Left panel */
+.panel{width:380px;min-width:320px;flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:18px;position:sticky;top:16px}
+.field label{display:block;font-size:.85rem;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.field input[type=text],.field textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:.95rem;outline:none;transition:border-color .2s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{min-height:70px;font-family:inherit}
+
+.style-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.style-btn{background:var(--bg2);border:2px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text2);font-size:.78rem;font-weight:600}
+.style-btn:hover{border-color:var(--accent);color:var(--text)}
+.style-btn.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
+.style-btn .icon{font-size:1.4rem;display:block;margin-bottom:3px}
+
+.range-wrap{display:flex;align-items:center;gap:14px}
+.range-wrap input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none}
+.range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));cursor:pointer;box-shadow:0 0 10px var(--accent-glow)}
+.range-val{font-size:1.1rem;font-weight:700;color:var(--accent);min-width:36px;text-align:center}
+
+.btn-gen{width:100%;padding:14px;border:none;border-radius:10px;font-size:1.05rem;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 20px var(--accent-glow);transition:all .25s;letter-spacing:.5px}
+.btn-gen:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(255,107,53,.4)}
+.btn-gen:active{transform:translateY(0)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.api-section{border-top:1px solid var(--border);padding-top:14px}
+.api-toggle{font-size:.82rem;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.api-toggle:hover{color:var(--text2)}
+.api-fields{display:none;margin-top:10px;flex-direction:column;gap:8px}
+.api-fields.show{display:flex}
+.api-fields input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.85rem;outline:none}
+.api-fields input:focus{border-color:var(--accent)}
+
+.usage{font-size:.8rem;color:var(--text3);text-align:center}
+.usage span{color:var(--accent);font-weight:700}
+
+/* Right preview */
+.preview-area{flex:1;min-height:500px;display:flex;flex-direction:column;align-items:center}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:500px;color:var(--text3);gap:16px;width:100%}
+.empty-state .icon{font-size:4rem;opacity:.4}
+.empty-state p{font-size:1.1rem}
+
+/* Slide viewer */
+.slide-viewer{width:100%;display:none;flex-direction:column;align-items:center;gap:16px}
+.slide-viewer.active{display:flex}
+
+.slide-container{width:100%;max-width:860px;aspect-ratio:16/9;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid var(--border)}
+.slide-content{width:100%;height:100%;padding:48px 56px;display:flex;flex-direction:column;justify-content:center;position:relative}
+
+/* Slide types */
+.slide-content.title-slide{text-align:center;justify-content:center;align-items:center}
+.slide-content.title-slide h2{font-size:2.4rem;font-weight:800;line-height:1.2;margin-bottom:16px}
+.slide-content.title-slide .subtitle{font-size:1.2rem;color:var(--text2)}
+.slide-content.title-slide .deco-line{width:80px;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:20px auto 0}
+
+.slide-content.section-slide{justify-content:center;align-items:center;text-align:center}
+.slide-content.section-slide h2{font-size:2rem;font-weight:700;position:relative}
+.slide-content.section-slide h2::after{content:'';display:block;width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin:16px auto 0;border-radius:2px}
+.slide-content.section-slide .section-num{font-size:5rem;font-weight:900;opacity:.06;position:absolute;top:10%;right:10%;line-height:1}
+
+.slide-content.content-slide h2{font-size:1.5rem;font-weight:700;margin-bottom:24px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+.slide-content.content-slide .body{font-size:1rem;line-height:1.8;color:var(--text2)}
+.slide-content.content-slide .body ul{padding-left:20px}
+.slide-content.content-slide .body li{margin-bottom:8px;position:relative}
+.slide-content.content-slide .body li::marker{color:var(--accent)}
+
+.slide-content.end-slide{justify-content:center;align-items:center;text-align:center}
+.slide-content.end-slide h2{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-content.end-slide .thanks{font-size:1.1rem;color:var(--text2);margin-top:12px}
+
+/* Slide number badge */
+.slide-badge{position:absolute;top:16px;right:20px;font-size:.75rem;color:var(--text3);background:rgba(0,0,0,.3);padding:3px 10px;border-radius:20px}
+
+/* Navigation */
+.slide-nav{display:flex;align-items:center;gap:16px}
+.slide-nav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .2s}
+.slide-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.slide-nav button:disabled{opacity:.3;cursor:not-allowed}
+.slide-nav .page-info{font-size:.9rem;color:var(--text2);min-width:80px;text-align:center}
+
+/* Action bar */
+.action-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.action-btn{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:.85rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.action-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff}
+.action-btn.primary:hover{opacity:.9}
+
+/* Progress bar */
+.progress-bar{width:100%;max-width:860px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;display:none}
+.progress-bar.active{display:block}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .3s}
+
+/* Streaming text */
+.streaming-cursor::after{content:'▌';animation:blink .8s infinite;color:var(--accent)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Fullscreen overlay */
+.fullscreen-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.fullscreen-overlay.active{display:flex}
+.fullscreen-overlay .slide-container{max-width:90vw;max-height:75vh;width:auto;height:auto;aspect-ratio:16/9}
+.fullscreen-overlay .slide-nav button{width:50px;height:50px;font-size:1.3rem}
+.fullscreen-close{position:fixed;top:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1.4rem;cursor:pointer;z-index:1001;display:flex;align-items:center;justify-content:center}
+.fullscreen-close:hover{background:rgba(255,255,255,.2)}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card2);border:1px solid var(--accent);color:var(--text);padding:12px 24px;border-radius:10px;font-size:.9rem;opacity:0;transition:all .35s;z-index:2000;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Style-specific slide themes */
+.style-business .slide-content{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)}
+.style-business .slide-content h2{color:#e8e8e8}
+.style-academic .slide-content{background:linear-gradient(135deg,#1a1a2e 0%,#1e2a3a 100%)}
+.style-academic .slide-content h2{color:#a8d8ea}
+.style-creative .slide-content{background:linear-gradient(135deg,#2d1b3d 0%,#1a1a2e 50%,#2b1a1a 100%)}
+.style-creative .slide-content h2{background:linear-gradient(135deg,#ff6b9d,#c44dff,#6b9dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.style-minimal .slide-content{background:linear-gradient(135deg,#1a1a2e 0%,#222 100%)}
+.style-minimal .slide-content h2{color:#ccc;font-weight:300;letter-spacing:1px}
+.style-tech .slide-content{background:linear-gradient(135deg,#0a0a1a 0%,#1a1a2e 50%,#0a1a2a 100%)}
+.style-tech .slide-content h2{color:#4fc3f7}
+.style-tech .slide-badge{color:#4fc3f7;border:1px solid rgba(79,195,247,.2)}
+
+/* Loading spinner */
+.loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Mobile */
+@media(max-width:900px){
+  .main{flex-direction:column}
+  .panel{width:100%;min-width:unset;position:static}
+  .header h1{font-size:1.6rem}
+  .style-grid{grid-template-columns:repeat(5,1fr);gap:6px}
+  .style-btn{padding:8px 2px;font-size:.72rem}
+  .style-btn .icon{font-size:1.1rem}
+  .slide-content{padding:28px 32px}
+  .slide-content.title-slide h2{font-size:1.6rem}
+  .slide-content.content-slide h2{font-size:1.2rem}
+  .slide-content.content-slide .body{font-size:.9rem}
+  .fullscreen-overlay .slide-container{max-width:96vw}
+}
+@media(max-width:480px){
+  .app{padding:10px}
+  .panel{padding:16px}
+  .slide-content{padding:20px 24px}
+  .slide-content.title-slide h2{font-size:1.3rem}
+  .slide-content.section-slide h2{font-size:1.3rem}
+  .action-bar{gap:6px}
+  .action-btn{padding:6px 12px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+
+<div class="app">
+  <header class="header">
+    <h1>AI PPT生成器</h1>
+    <p>输入主题，AI自动生成完整演示文稿 · 5种风格 · 5-40页</p>
+  </header>
+
+  <div class="main">
+    <!-- Left Panel -->
+    <div class="panel">
+      <div class="field">
+        <label>PPT主题 / 关键词</label>
+        <textarea id="topicInput" placeholder="例如：2026年AI行业趋势分析、产品发布会、项目总结报告..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>风格选择</label>
+        <div class="style-grid">
+          <div class="style-btn active" data-style="business" onclick="selectStyle(this)">
+            <span class="icon">💼</span>商务
+          </div>
+          <div class="style-btn" data-style="academic" onclick="selectStyle(this)">
+            <span class="icon">🎓</span>学术
+          </div>
+          <div class="style-btn" data-style="creative" onclick="selectStyle(this)">
+            <span class="icon">🎨</span>创意
+          </div>
+          <div class="style-btn" data-style="minimal" onclick="selectStyle(this)">
+            <span class="icon">◻️</span>简约
+          </div>
+          <div class="style-btn" data-style="tech" onclick="selectStyle(this)">
+            <span class="icon">🤖</span>科技
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>页数</label>
+        <div class="range-wrap">
+          <input type="range" id="pageRange" min="5" max="40" value="12" oninput="updatePageVal()">
+          <span class="range-val" id="pageVal">12</span>
+        </div>
+      </div>
+
+      <button class="btn-gen" id="genBtn" onclick="generate()">🚀 生成PPT</button>
+
+      <div class="usage" id="usageInfo">今日剩余：<span id="usageCount">3</span> 次</div>
+
+      <div class="api-section">
+        <div class="api-toggle" onclick="toggleApi()">🔑 自定义API Key（可选）<span id="apiArrow">▸</span></div>
+        <div class="api-fields" id="apiFields">
+          <input type="text" id="apiKeyInput" placeholder="API Key（留空使用默认）">
+          <input type="text" id="baseUrlInput" placeholder="Base URL（默认：https://api.siliconflow.cn/v1）">
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Preview -->
+    <div class="preview-area">
+      <div class="empty-state" id="emptyState">
+        <div class="icon">📊</div>
+        <p>输入主题，开始生成你的PPT</p>
+      </div>
+
+      <div class="slide-viewer" id="slideViewer">
+        <div class="progress-bar" id="progressBar"><div class="fill" id="progressFill"></div></div>
+        <div class="slide-container" id="slideContainer">
+          <div class="slide-content" id="slideContent"></div>
+          <div class="slide-badge" id="slideBadge"></div>
+        </div>
+        <div class="slide-nav">
+          <button id="prevBtn" onclick="prevSlide()">◀</button>
+          <span class="page-info" id="pageInfo">1 / 1</span>
+          <button id="nextBtn" onclick="nextSlide()">▶</button>
+        </div>
+        <div class="action-bar">
+          <button class="action-btn" onclick="copyMarkdown()">📋 复制大纲</button>
+          <button class="action-btn" onclick="toggleFullscreen()">🖥️ 全屏预览</button>
+          <button class="action-btn" onclick="downloadMarkdown()">⬇️ 下载Markdown</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen overlay -->
+<div class="fullscreen-overlay" id="fullscreenOverlay">
+  <button class="fullscreen-close" onclick="toggleFullscreen()">✕</button>
+  <div class="slide-container" id="fsSlideContainer">
+    <div class="slide-content" id="fsSlideContent"></div>
+    <div class="slide-badge" id="fsSlideBadge"></div>
+  </div>
+  <div class="slide-nav">
+    <button onclick="prevSlide()">◀</button>
+    <span class="page-info" id="fsPageInfo">1 / 1</span>
+    <button onclick="nextSlide()">▶</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== State =====
+let currentStyle = 'business';
+let slides = [];
+let currentSlide = 0;
+let isGenerating = false;
+let rawMarkdown = '';
+let isFullscreen = false;
+
+// ===== Config =====
+const DEFAULT_API_KEY = 'sk-hmfhovqoluzfqjpmuqdcucbxmsqqwilixabtwgfdqqakjqsu';
+const DEFAULT_BASE_URL = 'https://api.siliconflow.cn/v1';
+const MODEL = 'deepseek-ai/DeepSeek-V3';
+const DAILY_LIMIT = 3;
+
+const STYLE_MAP = {
+  business: '商务',
+  academic: '学术',
+  creative: '创意',
+  minimal: '简约',
+  tech: '科技'
+};
+
+// ===== Usage =====
+function getUsageKey() {
+  const d = new Date();
+  return `ppt_usage_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
+}
+function getUsage() {
+  const k = getUsageKey();
+  return parseInt(localStorage.getItem(k) || '0', 10);
+}
+function incrementUsage() {
+  const k = getUsageKey();
+  localStorage.setItem(k, (getUsage() + 1).toString());
+  updateUsageDisplay();
+}
+function updateUsageDisplay() {
+  const left = Math.max(0, DAILY_LIMIT - getUsage());
+  document.getElementById('usageCount').textContent = left;
+}
+
+// ===== UI Helpers =====
+function selectStyle(el) {
+  document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentStyle = el.dataset.style;
+}
+function updatePageVal() {
+  document.getElementById('pageVal').textContent = document.getElementById('pageRange').value;
+}
+function toggleApi() {
+  const f = document.getElementById('apiFields');
+  const a = document.getElementById('apiArrow');
+  f.classList.toggle('show');
+  a.textContent = f.classList.contains('show') ? '▾' : '▸';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function getApiKey() {
+  const v = document.getElementById('apiKeyInput').value.trim();
+  return v || DEFAULT_API_KEY;
+}
+function getBaseUrl() {
+  const v = document.getElementById('baseUrlInput').value.trim();
+  return v || DEFAULT_BASE_URL;
+}
+
+// ===== Slide Rendering =====
+function renderSlide(index, target) {
+  if (!slides[index]) return;
+  const slide = slides[index];
+  const container = document.getElementById(target || 'slideContainer');
+  const contentEl = document.getElementById(target === 'fsSlideContainer' ? 'fsSlideContent' : 'slideContent');
+  const badgeEl = document.getElementById(target === 'fsSlideContainer' ? 'fsSlideBadge' : 'slideBadge');
+
+  // Remove old style classes
+  container.className = 'slide-container style-' + currentStyle;
+
+  let html = '';
+  const type = slide.type || 'content';
+
+  if (type === 'title') {
+    contentEl.className = 'slide-content title-slide';
+    html = `<h2>${escHtml(slide.title || '')}</h2>`;
+    if (slide.subtitle) html += `<div class="subtitle">${escHtml(slide.subtitle)}</div>`;
+    html += `<div class="deco-line"></div>`;
+  } else if (type === 'section') {
+    contentEl.className = 'slide-content section-slide';
+    html = `<div class="section-num">${escHtml(String(index).padStart(2,'0'))}</div>`;
+    html += `<h2>${escHtml(slide.title || '')}</h2>`;
+  } else if (type === 'end') {
+    contentEl.className = 'slide-content end-slide';
+    html = `<h2>${escHtml(slide.title || '谢谢！')}</h2>`;
+    if (slide.subtitle) html += `<div class="thanks">${escHtml(slide.subtitle)}</div>`;
+  } else {
+    contentEl.className = 'slide-content content-slide';
+    html = `<h2>${escHtml(slide.title || '')}</h2><div class="body">${renderBody(slide.body || '')}</div>`;
+  }
+
+  contentEl.innerHTML = html;
+  badgeEl.textContent = `${index + 1} / ${slides.length}`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderBody(text) {
+  // Convert markdown-ish bullet lists to HTML
+  const lines = text.split('\n');
+  let html = '';
+  let inUl = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.match(/^[-*•]\s/)) {
+      if (!inUl) { html += '<ul>'; inUl = true; }
+      html += `<li>${escHtml(trimmed.replace(/^[-*•]\s*/, ''))}</li>`;
+    } else {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      html += `<p>${escHtml(trimmed)}</p>`;
+    }
+  }
+  if (inUl) html += '</ul>';
+  return html;
+}
+
+function updateNav() {
+  document.getElementById('pageInfo').textContent = `${currentSlide + 1} / ${slides.length}`;
+  document.getElementById('fsPageInfo').textContent = `${currentSlide + 1} / ${slides.length}`;
+  document.getElementById('prevBtn').disabled = currentSlide <= 0;
+  document.getElementById('nextBtn').disabled = currentSlide >= slides.length - 1;
+}
+
+function showSlide(index) {
+  if (index < 0 || index >= slides.length) return;
+  currentSlide = index;
+  renderSlide(currentSlide);
+  if (isFullscreen) renderSlide(currentSlide, 'fsSlideContainer');
+  updateNav();
+}
+
+function prevSlide() { showSlide(currentSlide - 1); }
+function nextSlide() { showSlide(currentSlide + 1); }
+
+// ===== Fullscreen =====
+function toggleFullscreen() {
+  isFullscreen = !isFullscreen;
+  const overlay = document.getElementById('fullscreenOverlay');
+  if (isFullscreen) {
+    overlay.classList.add('active');
+    renderSlide(currentSlide, 'fsSlideContainer');
+    updateNav();
+  } else {
+    overlay.classList.remove('active');
+  }
+}
+
+// ===== Keyboard =====
+document.addEventListener('keydown', e => {
+  if (!slides.length) return;
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { prevSlide(); e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { nextSlide(); e.preventDefault(); }
+  if (e.key === 'Escape' && isFullscreen) { toggleFullscreen(); }
+});
+
+// ===== Parse PPT from streamed text =====
+function parseSlides(text, pageCount) {
+  const result = [];
+  // Split by slide markers: --- or ## or numbered headers
+  const sections = text.split(/^(?:---+)\s*$|^#{1,2}\s/m);
+
+  // Try a more robust parse: split by "第X页" or "Slide X" or "## " patterns
+  const slideBlocks = [];
+  const blockRegex = /(?:第\s*(\d+)\s*[页张]|Slide\s*(\d+)|^#{1,3}\s+(.+?))\s*[\n:：]/gm;
+  let lastIndex = 0;
+  let match;
+
+  // Simpler approach: split by ## headers or ---
+  const parts = text.split(/\n(?=#{1,3}\s|\-{3,})/);
+
+  if (parts.length < 2) {
+    // Try splitting by "第X页" pattern
+    const altParts = text.split(/(?=第\s*\d+\s*[页张])/);
+    if (altParts.length >= 2) {
+      return parseFromBlocks(altParts, pageCount);
+    }
+  }
+
+  return parseFromBlocks(parts.length >= 2 ? parts : [text], pageCount);
+}
+
+function parseFromBlocks(blocks, pageCount) {
+  const result = [];
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i].trim();
+    if (!block) continue;
+
+    const lines = block.split('\n');
+    let title = '';
+    let body = '';
+    let type = 'content';
+
+    // Extract title
+    for (let j = 0; j < lines.length; j++) {
+      const line = lines[j].trim();
+      if (!line) continue;
+      // Title detection
+      if (j === 0 || (title === '' && (line.match(/^#{1,3}\s/) || line.match(/^第\d+[页张]/) || line.match(/^Slide\s*\d+/i)))) {
+        title = line.replace(/^#{1,3}\s+/, '').replace(/^第\s*\d+\s*[页张]\s*[:：]?\s*/, '').replace(/^Slide\s*\d+\s*[:：]?\s*/i, '').trim();
+        continue;
+      }
+      body += line + '\n';
+    }
+
+    // Determine type
+    if (result.length === 0 && (i === 0 || blocks.length <= 3)) {
+      type = 'title';
+    } else if (i === blocks.length - 1) {
+      type = 'end';
+    } else if (!body.trim() || body.trim().length < 20) {
+      type = 'section';
+    }
+
+    if (title) {
+      result.push({ type, title, body: body.trim() });
+    }
+  }
+
+  // Ensure we have at least a title and end slide
+  if (result.length === 0) {
+    result.push({ type: 'title', title: '演示文稿', subtitle: '', body: '' });
+  }
+  if (result[result.length - 1].type !== 'end') {
+    const last = result[result.length - 1];
+    result.push({ type: 'end', title: '感谢观看', subtitle: '', body: '' });
+  }
+  // Ensure first slide is title
+  if (result[0].type !== 'title') {
+    result.unshift({ type: 'title', title: result[0].title, subtitle: '', body: '' });
+  }
+
+  return result;
+}
+
+// ===== Generate PPT =====
+async function generate() {
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) { showToast('请输入PPT主题'); return; }
+  if (isGenerating) return;
+
+  // Check usage
+  const customKey = document.getElementById('apiKeyInput').value.trim();
+  if (!customKey) {
+    const usage = getUsage();
+    if (usage >= DAILY_LIMIT) {
+      showToast('今日免费次数已用完，请填写自己的API Key继续使用');
+      return;
+    }
+  }
+
+  const pageCount = parseInt(document.getElementById('pageRange').value);
+  const styleName = STYLE_MAP[currentStyle];
+
+  isGenerating = true;
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>正在生成...';
+
+  // Show viewer
+  document.getElementById('emptyState').style.display = 'none';
+  const viewer = document.getElementById('slideViewer');
+  viewer.classList.add('active');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  progressBar.classList.add('active');
+  progressFill.style.width = '5%';
+
+  slides = [];
+  currentSlide = 0;
+  rawMarkdown = '';
+
+  // Show generating state
+  const container = document.getElementById('slideContainer');
+  container.className = 'slide-container style-' + currentStyle;
+  const contentEl = document.getElementById('slideContent');
+  contentEl.className = 'slide-content title-slide';
+  contentEl.innerHTML = `<h2 class="streaming-cursor">正在生成PPT内容...</h2><div class="subtitle">主题：${escHtml(topic)}</div><div class="deco-line"></div>`;
+  document.getElementById('slideBadge').textContent = '...';
+
+  const systemPrompt = `你是PPT内容生成专家。根据用户给的主题，生成完整的PPT内容大纲。
+
+严格格式要求（每页必须按此格式，不可省略）：
+
+第1页
+标题：[封面标题]
+副标题：[副标题]
+
+第2页
+标题：[目录/概览]
+内容：
+- 要点1
+- 要点2
+- 要点3
+
+第N页
+标题：[该页标题]
+内容：
+- 要点1
+- 要点2
+- 要点3
+
+最后一页
+标题：感谢观看
+副标题：[结束语]
+
+规则：
+1. 必须生成恰好${pageCount}页内容
+2. 第1页是封面（只有标题和副标题），最后一页是结尾页
+3. 第2页建议是目录/概览页
+4. 内容要专业、详实、有逻辑性
+5. 风格为${styleName}风格
+6. 每页3-6个要点，每个要点15-40字
+7. 严格按"第X页"格式标记每页`;
+
+  const userPrompt = `请生成一份关于"${topic}"的PPT，共${pageCount}页，${styleName}风格。`;
+
+  try {
+    const apiKey = getApiKey();
+    const baseUrl = getBaseUrl();
+    const url = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 8192
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`API请求失败 (${response.status}): ${errText.substring(0, 200)}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let totalText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith('data:')) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === '[DONE]') continue;
+
+        try {
+          const json = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta?.content || '';
+          if (delta) {
+            totalText += delta;
+            rawMarkdown = totalText;
+
+            // Update progress
+            const estimatedProgress = Math.min(90, 5 + (totalText.length / (pageCount * 150)) * 85);
+            progressFill.style.width = estimatedProgress + '%';
+
+            // Parse and render on the fly
+            const parsed = parseSlides(totalText, pageCount);
+            if (parsed.length > slides.length) {
+              slides = parsed;
+              renderSlide(Math.min(currentSlide, slides.length - 1));
+              updateNav();
+            }
+          }
+        } catch (e) { /* skip malformed JSON chunks */ }
+      }
+    }
+
+    // Final parse
+    progressFill.style.width = '100%';
+    slides = parseSlides(totalText, pageCount);
+    rawMarkdown = totalText;
+
+    // Increment usage if using default key
+    if (!customKey) incrementUsage();
+
+    showSlide(0);
+    showToast(`✅ 生成完成，共${slides.length}页`);
+
+  } catch (err) {
+    console.error(err);
+    showToast('生成失败：' + err.message);
+    contentEl.className = 'slide-content title-slide';
+    contentEl.innerHTML = `<h2>生成失败</h2><div class="subtitle">${escHtml(err.message)}</div><div class="deco-line"></div>`;
+  } finally {
+    isGenerating = false;
+    btn.disabled = false;
+    btn.innerHTML = '🚀 生成PPT';
+    setTimeout(() => {
+      progressBar.classList.remove('active');
+      progressFill.style.width = '0%';
+    }, 800);
+  }
+}
+
+// ===== Copy & Download =====
+function copyMarkdown() {
+  if (!rawMarkdown) { showToast('暂无内容可复制'); return; }
+  navigator.clipboard.writeText(rawMarkdown).then(() => {
+    showToast('✅ 大纲已复制到剪贴板');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = rawMarkdown;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 大纲已复制到剪贴板');
+  });
+}
+
+function downloadMarkdown() {
+  if (!rawMarkdown) { showToast('暂无内容可下载'); return; }
+  const blob = new Blob([rawMarkdown], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'PPT大纲.md';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ 文件已下载');
+}
+
+// ===== Init =====
+updateUsageDisplay();
+
+// Touch swipe support
+let touchStartX = 0;
+let touchEndX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 60) {
+    if (diff > 0) nextSlide();
+    else prevSlide();
+  }
+}, { passive: true });
+</script>
+</body>
+</html>
