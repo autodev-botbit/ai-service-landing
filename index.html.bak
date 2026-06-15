@@ -360,122 +360,6 @@ body {
   .cta-banner { padding: 40px 20px; }
   .cta-banner h2 { font-size: 1.3rem; }
 }
-
-/* ===== Custom Dev Featured Card ===== */
-.service-card.featured {
-  border-color: rgba(108, 92, 231, 0.4);
-  background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(0,210,255,0.05));
-  grid-column: 1 / -1;
-  position: relative;
-}
-.service-card.featured::before {
-  opacity: 1;
-}
-.service-card.featured .service-icon {
-  width: 64px; height: 64px; font-size: 2rem;
-  background: linear-gradient(135deg, rgba(108,92,231,0.25), rgba(0,210,255,0.15));
-}
-.featured-body {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 24px;
-}
-.featured-info { flex: 1; min-width: 280px; }
-.featured-info h3 { font-size: 1.5rem; margin-bottom: 8px; }
-.featured-info p { font-size: 1rem; color: #a0a0c0; margin-bottom: 12px; }
-.featured-tags {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
-}
-.featured-tag {
-  display: inline-block;
-  padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
-  background: rgba(108,92,231,0.12); color: #a78bfa;
-  border: 1px solid rgba(108,92,231,0.2);
-}
-.featured-price-row {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-.featured-price {
-  font-size: 1.8rem; font-weight: 800;
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.featured-price span { font-size: 0.9rem; font-weight: 400; }
-.featured-delivery {
-  font-size: 0.9rem; color: #00d2ff; font-weight: 600;
-}
-.btn-cta {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 32px; border-radius: 12px;
-  background: linear-gradient(135deg, #ff6b35, #ff9a56);
-  color: #fff; font-weight: 700; font-size: 1rem;
-  border: none; cursor: pointer; text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.3s;
-  box-shadow: 0 4px 24px rgba(255,107,53,0.4);
-  white-space: nowrap;
-}
-.btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,107,53,0.6); }
-
-/* ===== Business Flow Section ===== */
-.biz-flow-steps {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
-  align-items: center;
-}
-.biz-flow-step {
-  flex: 0 0 auto;
-  text-align: center; padding: 24px 20px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px; min-width: 140px;
-  transition: border-color 0.3s, transform 0.3s;
-}
-.biz-flow-step:hover { border-color: rgba(255,107,53,0.4); transform: translateY(-4px); }
-.biz-flow-step .step-icon { font-size: 1.8rem; margin-bottom: 8px; }
-.biz-flow-step h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-.biz-flow-step p { font-size: 0.78rem; color: #7a7a9a; }
-.biz-flow-arrow {
-  font-size: 1.4rem; color: rgba(108,92,231,0.5);
-  flex: 0 0 auto;
-}
-@media (max-width: 768px) {
-  .biz-flow-steps { flex-direction: column; align-items: center; }
-  .biz-flow-arrow { transform: rotate(90deg); }
-  .featured-body { flex-direction: column; text-align: center; }
-  .featured-tags { justify-content: center; }
-  .featured-price-row { justify-content: center; }
-  .service-card.featured { grid-column: auto; }
-}
-
-/* ===== Contact Modal ===== */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-  justify-content: center; align-items: center;
-}
-.modal-overlay.active { display: flex; }
-.modal-box {
-  background: #14142a; border: 1px solid rgba(108,92,231,0.3);
-  border-radius: 24px; padding: 40px 36px; max-width: 420px; width: 90%;
-  text-align: center; position: relative;
-  animation: fadeInUp 0.4s ease;
-}
-.modal-close {
-  position: absolute; top: 16px; right: 20px;
-  background: none; border: none; color: #7a7a9a; font-size: 1.5rem;
-  cursor: pointer; transition: color 0.3s;
-}
-.modal-close:hover { color: #fff; }
-.modal-box h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
-.modal-box p { color: #7a7a9a; font-size: 0.9rem; margin-bottom: 24px; }
-.modal-contact-item {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 20px; margin-bottom: 12px;
-  background: rgba(255,255,255,0.04); border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.modal-contact-item .micon { font-size: 1.5rem; }
-.modal-contact-item .mlabel { font-size: 0.8rem; color: #7a7a9a; }
-.modal-contact-item .mvalue { font-size: 1.1rem; font-weight: 700; color: #00d2ff; }
-
 </style>
 </head>
 <body>
@@ -488,7 +372,6 @@ body {
   <div class="nav-logo">AI<span style="color:#00d2ff">Dev</span> Studio</div>
   <div class="nav-links" id="navLinks">
     <a href="#tools">免费工具</a><a href="#services">服务项目</a>
-    <a href="#biz-flow">商单流程</a>
     <a href="#process">工作流程</a>
     <a href="#payment">收款方式</a>
     <a href="#contact">联系我们</a>
@@ -510,7 +393,7 @@ body {
     </div>
     <div class="hero-stats">
       <div class="hero-stat"><div class="num">7×24</div><div class="label">全天在线</div></div>
-      <div class="hero-stat"><div class="num">7+</div><div class="label">服务类别</div></div>
+      <div class="hero-stat"><div class="num">6+</div><div class="label">服务类别</div></div>
       <div class="hero-stat"><div class="num">¥29</div><div class="label">起步价</div></div>
     </div>
   </div>
@@ -550,103 +433,41 @@ body {
   <h2 class="section-title">服务项目</h2>
   <p class="section-desc">涵盖从开发到设计的全方位AI服务，按需选择，灵活付费</p>
   <div class="services-grid">
-    <div class="service-card featured" data-delay="0">
-      <div class="featured-body">
-        <div class="service-icon">🚀</div>
-        <div class="featured-info">
-          <h3>🚀 定制开发服务</h3>
-          <p>专业网站/App/小程序开发，AI驱动快速交付</p>
-          <div class="featured-tags">
-            <span class="featured-tag">企业官网</span>
-            <span class="featured-tag">小程序开发</span>
-            <span class="featured-tag">App开发</span>
-            <span class="featured-tag">H5活动页</span>
-            <span class="featured-tag">管理后台</span>
-            <span class="featured-tag">API开发</span>
-          </div>
-          <div class="featured-price-row">
-            <div class="featured-price">¥500 <span>起</span></div>
-            <div class="featured-delivery">⚡ 3天交付</div>
-            <button class="btn-cta" onclick="openContactModal()">立即咨询</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="service-card" data-delay="200">
+    <div class="service-card" data-delay="0">
       <div class="service-icon">🌐</div>
       <h3>网站开发</h3>
       <p>企业官网、落地页、H5活动页、响应式网站，AI自动生成代码并部署</p>
       <div class="service-price">¥299 <span>起</span></div>
     </div>
-    <div class="service-card" data-delay="200">
+    <div class="service-card" data-delay="100">
       <div class="service-icon">📱</div>
       <h3>小程序开发</h3>
       <p>微信小程序、支付宝小程序，从UI到接口一站式AI交付</p>
       <div class="service-price">¥499 <span>起</span></div>
     </div>
-    <div class="service-card" data-delay="300">
+    <div class="service-card" data-delay="200">
       <div class="service-icon">🚀</div>
       <h3>App开发</h3>
       <p>跨平台App开发，Flutter/React Native方案，AI生成完整项目</p>
       <div class="service-price">¥999 <span>起</span></div>
     </div>
-    <div class="service-card" data-delay="400">
+    <div class="service-card" data-delay="300">
       <div class="service-icon">🤖</div>
       <h3>AI工具定制</h3>
       <p>聊天机器人、数据分析工具、自动化脚本，按场景定制AI能力</p>
       <div class="service-price">¥199 <span>起</span></div>
     </div>
-    <div class="service-card" data-delay="500">
+    <div class="service-card" data-delay="400">
       <div class="service-icon">📊</div>
       <h3>PPT设计</h3>
       <p>商业路演、产品汇报、培训课件，AI一键生成专业级演示文稿</p>
       <div class="service-price">¥49 <span>起</span></div>
     </div>
-    <div class="service-card" data-delay="600">
+    <div class="service-card" data-delay="500">
       <div class="service-icon">✍️</div>
       <h3>文案代写</h3>
       <p>产品文案、推广软文、公告通知、邮件模板，AI精准生成</p>
       <div class="service-price">¥29 <span>起</span></div>
-    </div>
-  </div>
-</section>
-
-
-<!-- Business Flow -->
-<section class="section" id="biz-flow">
-  <div class="section-label">Business Flow</div>
-  <h2 class="section-title">商单流程</h2>
-  <p class="section-desc">从需求到上线，5步高效交付，省心省力</p>
-  <div class="biz-flow-steps">
-    <div class="biz-flow-step">
-      <div class="step-icon">💬</div>
-      <h4>需求沟通</h4>
-      <p>详细描述项目需求</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">📋</div>
-      <h4>方案报价</h4>
-      <p>10分钟内给出方案</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">💳</div>
-      <h4>确认付款</h4>
-      <p>确认方案后扫码支付</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">⚙️</div>
-      <h4>开发交付</h4>
-      <p>AI高效开发，进度可查</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">🚀</div>
-      <h4>验收上线</h4>
-      <p>测试验收，满意交付</p>
     </div>
   </div>
 </section>
@@ -740,31 +561,6 @@ body {
     </div>
   </div>
 </section>
-
-
-<!-- Contact Modal -->
-<div class="modal-overlay" id="contactModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeContactModal()">&times;</button>
-    <h3>🚀 立即咨询</h3>
-    <p>添加微信，10分钟内响应您的需求</p>
-    <div class="modal-contact-item">
-      <div class="micon">💬</div>
-      <div>
-        <div class="mlabel">微信号</div>
-        <div class="mvalue">hutianci001</div>
-      </div>
-    </div>
-    <div class="modal-contact-item">
-      <div class="micon">📞</div>
-      <div>
-        <div class="mlabel">电话咨询</div>
-        <div class="mvalue">18256264479</div>
-      </div>
-    </div>
-    <a href="#contact" class="btn-primary" style="margin-top:16px;display:inline-flex" onclick="closeContactModal()">查看更多联系方式 →</a>
-  </div>
-</div>
 
 <!-- CTA Banner -->
 <div class="cta-banner">
@@ -881,23 +677,6 @@ body {
     a.addEventListener('click', () => links.classList.remove('open'));
   });
 })();
-
-
-// ===== Contact Modal =====
-function openContactModal() {
-  document.getElementById('contactModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeContactModal() {
-  document.getElementById('contactModal').classList.remove('active');
-  document.body.style.overflow = '';
-}
-document.getElementById('contactModal').addEventListener('click', function(e) {
-  if (e.target === this) closeContactModal();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeContactModal();
-});
 
 // ===== Smooth Scroll =====
 document.querySelectorAll('a[href^="#"]').forEach(a => {
