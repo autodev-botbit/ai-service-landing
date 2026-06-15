@@ -3,910 +3,667 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI智能开发服务 - AI帮你写代码·建网站·做小程序</title>
-<meta name="description" content="AI Agent自助开发服务，7×24小时自动接单，按需付费。网站开发、小程序开发、App开发、AI工具定制、PPT设计、文案代写。">
+<title>AI全能事务所 - 一个AI，七种专业能力，24小时在线</title>
 <style>
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: #0a0a1a;
-  color: #e0e0f0;
+  background: #0a0e17;
+  color: #e2e8f0;
   line-height: 1.7;
   overflow-x: hidden;
 }
+a { color: inherit; text-decoration: none; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-/* ===== Scrollbar ===== */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0a0a1a; }
-::-webkit-scrollbar-thumb { background: #4a3aff; border-radius: 3px; }
-
-/* ===== Background Particles ===== */
-#particles-canvas {
+/* ===== Animated Background ===== */
+.bg-grid {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
 }
+.bg-glow {
+  position: fixed; top: -30%; left: -10%; width: 60%; height: 60%;
+  background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.bg-glow-2 {
+  position: fixed; bottom: -20%; right: -10%; width: 50%; height: 50%;
+  background: radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.content-wrap { position: relative; z-index: 1; }
 
-/* ===== Navigation ===== */
-.nav {
+/* ===== Nav ===== */
+nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 16px 24px;
-  display: flex; justify-content: space-between; align-items: center;
-  transition: background 0.3s, backdrop-filter 0.3s;
-}
-.nav.scrolled {
-  background: rgba(10, 10, 26, 0.85);
+  background: rgba(10,14,23,0.85);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(74, 58, 255, 0.2);
+  border-bottom: 1px solid rgba(99,102,241,0.15);
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
 }
 .nav-logo {
-  font-size: 1.3rem; font-weight: 800;
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff);
+  font-size: 1.25rem; font-weight: 700;
+  background: linear-gradient(135deg, #818cf8, #38bdf8);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.nav-links { display: flex; gap: 24px; }
+.nav-links { display: flex; gap: 28px; }
 .nav-links a {
-  color: #b0b0d0; text-decoration: none; font-size: 0.9rem;
-  transition: color 0.3s; position: relative;
+  font-size: 0.9rem; color: #94a3b8; transition: color 0.2s;
+  position: relative;
 }
-.nav-links a:hover { color: #fff; }
+.nav-links a:hover { color: #e2e8f0; }
 .nav-links a::after {
-  content: ''; position: absolute; bottom: -4px; left: 0;
-  width: 0; height: 2px;
-  background: linear-gradient(90deg, #6c5ce7, #00d2ff);
+  content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+  background: linear-gradient(90deg, #818cf8, #38bdf8);
   transition: width 0.3s;
 }
 .nav-links a:hover::after { width: 100%; }
+.nav-cta {
+  padding: 8px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+  background: linear-gradient(135deg, #6366f1, #0ea5e9);
+  color: #fff; transition: transform 0.2s, box-shadow 0.2s;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
 
 /* Mobile menu */
-.nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
-.nav-toggle span { display: block; width: 24px; height: 2px; background: #e0e0f0; margin: 5px 0; transition: 0.3s; }
-
-/* ===== Section Common ===== */
-.section {
-  position: relative; z-index: 1;
-  max-width: 1200px; margin: 0 auto;
-  padding: 100px 24px;
+.menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+.menu-toggle span { display: block; width: 24px; height: 2px; background: #e2e8f0; margin: 5px 0; transition: 0.3s; }
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(10,14,23,0.97); z-index: 99; padding: 32px 24px;
+  flex-direction: column; gap: 24px;
 }
-.section-label {
-  display: inline-block;
-  font-size: 0.75rem; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: #6c5ce7;
-  background: rgba(108, 92, 231, 0.12);
-  padding: 6px 16px; border-radius: 20px;
-  margin-bottom: 16px;
-}
-.section-title {
-  font-size: 2.2rem; font-weight: 800;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #fff, #b0b0d0);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.section-desc { color: #8888aa; font-size: 1.05rem; max-width: 600px; margin-bottom: 48px; }
+.mobile-menu.active { display: flex; }
+.mobile-menu a { font-size: 1.1rem; color: #94a3b8; padding: 8px 0; }
+.mobile-menu a:hover { color: #e2e8f0; }
 
 /* ===== Hero ===== */
 .hero {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  text-align: center; position: relative; z-index: 1;
-  padding: 120px 24px 80px;
+  text-align: center; padding: 120px 24px 80px;
+  position: relative;
 }
 .hero-content { max-width: 800px; }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(108, 92, 231, 0.15);
-  border: 1px solid rgba(108, 92, 231, 0.3);
-  padding: 8px 20px; border-radius: 30px;
-  font-size: 0.85rem; color: #a78bfa;
-  margin-bottom: 32px;
-  animation: fadeInUp 0.8s ease;
+  padding: 6px 18px; border-radius: 100px;
+  background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25);
+  font-size: 0.85rem; color: #818cf8; margin-bottom: 32px;
+  animation: fadeInDown 0.8s ease;
 }
 .hero-badge .dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #00d2ff;
+  width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
   animation: pulse-dot 2s infinite;
 }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
 .hero h1 {
-  font-size: clamp(2rem, 6vw, 3.5rem);
-  font-weight: 900; line-height: 1.2;
-  margin-bottom: 24px;
-  animation: fadeInUp 0.8s ease 0.15s both;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800; line-height: 1.15; margin-bottom: 24px;
+  animation: fadeInUp 0.8s ease 0.2s both;
 }
 .hero h1 .gradient-text {
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff, #6c5ce7);
+  background: linear-gradient(135deg, #818cf8 0%, #38bdf8 50%, #818cf8 100%);
   background-size: 200% auto;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradient-shift 4s ease infinite;
+  animation: gradientShift 4s ease infinite;
+}
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 200% center; }
 }
 .hero p {
-  font-size: 1.2rem; color: #8888aa;
-  margin-bottom: 40px;
-  animation: fadeInUp 0.8s ease 0.3s both;
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  color: #94a3b8; margin-bottom: 48px;
+  animation: fadeInUp 0.8s ease 0.4s both;
 }
-.hero-buttons {
+.hero-actions {
   display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-  animation: fadeInUp 0.8s ease 0.45s both;
+  animation: fadeInUp 0.8s ease 0.6s both;
 }
 .btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 14px 36px; border-radius: 12px;
-  background: linear-gradient(135deg, #6c5ce7, #4a3aff);
-  color: #fff; font-weight: 700; font-size: 1rem;
-  border: none; cursor: pointer; text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.3s;
-  box-shadow: 0 4px 24px rgba(108, 92, 231, 0.4);
+  padding: 14px 36px; border-radius: 12px; font-size: 1rem; font-weight: 600;
+  background: linear-gradient(135deg, #6366f1, #0ea5e9);
+  color: #fff; border: none; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(108, 92, 231, 0.6); }
-.btn-secondary {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 14px 36px; border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #e0e0f0; font-weight: 600; font-size: 1rem;
-  cursor: pointer; text-decoration: none;
-  transition: background 0.3s, border-color 0.3s;
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.4); }
+.btn-outline {
+  padding: 14px 36px; border-radius: 12px; font-size: 1rem; font-weight: 600;
+  background: transparent; color: #e2e8f0; cursor: pointer;
+  border: 1px solid rgba(148,163,184,0.3);
+  transition: border-color 0.2s, background 0.2s;
 }
-.btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); }
+.btn-outline:hover { border-color: #818cf8; background: rgba(99,102,241,0.05); }
 
-/* Hero stats */
 .hero-stats {
-  display: flex; justify-content: center; gap: 48px; margin-top: 64px;
-  animation: fadeInUp 0.8s ease 0.6s both;
+  display: flex; gap: 48px; justify-content: center; margin-top: 64px;
+  animation: fadeInUp 0.8s ease 0.8s both;
 }
 .hero-stat { text-align: center; }
 .hero-stat .num {
   font-size: 2rem; font-weight: 800;
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff);
+  background: linear-gradient(135deg, #818cf8, #38bdf8);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.hero-stat .label { font-size: 0.85rem; color: #6a6a8a; margin-top: 4px; }
+.hero-stat .label { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
 
 /* ===== Services ===== */
-.services-grid {
+.services { padding: 100px 0; }
+.section-header { text-align: center; margin-bottom: 64px; }
+.section-header h2 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 16px;
+}
+.section-header p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+
+.service-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 24px;
 }
 .service-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  padding: 36px 28px;
-  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  background: rgba(15,23,42,0.6);
+  border: 1px solid rgba(99,102,241,0.1);
+  border-radius: 20px; padding: 36px;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
   position: relative; overflow: hidden;
-  opacity: 0; transform: translateY(30px);
-  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s, opacity 0.6s;
 }
-.service-card.visible { opacity: 1; transform: translateY(0); }
 .service-card::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 100%; height: 3px;
-  background: linear-gradient(90deg, #6c5ce7, #00d2ff);
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
   opacity: 0; transition: opacity 0.3s;
 }
 .service-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(108, 92, 231, 0.15);
-  border-color: rgba(108, 92, 231, 0.3);
+  transform: translateY(-4px);
+  border-color: rgba(99,102,241,0.25);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
 }
 .service-card:hover::before { opacity: 1; }
-.service-icon {
-  width: 56px; height: 56px; border-radius: 16px;
+
+.card-icon {
+  width: 56px; height: 56px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem; margin-bottom: 20px;
-  background: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(0,210,255,0.1));
+  background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
 }
-.service-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
-.service-card p { color: #7a7a9a; font-size: 0.9rem; margin-bottom: 16px; }
-.service-price {
-  font-size: 1.5rem; font-weight: 800;
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff);
+.card-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 16px; }
+.service-list { list-style: none; margin-bottom: 20px; }
+.service-list li {
+  padding: 6px 0; font-size: 0.95rem; color: #cbd5e1;
+  display: flex; align-items: center; gap: 10px;
+}
+.service-list li::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--card-color-1); flex-shrink: 0;
+}
+.card-price {
+  font-size: 0.9rem; color: #64748b;
+  padding-top: 16px; border-top: 1px solid rgba(148,163,184,0.1);
+}
+.card-price span {
+  background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-weight: 700; font-size: 1rem;
 }
-.service-price span { font-size: 0.9rem; font-weight: 400; }
+
+/* Card color themes */
+.service-card[data-theme="legal"] { --card-color-1: #f59e0b; --card-color-2: #f97316; }
+.service-card[data-theme="medical"] { --card-color-1: #22c55e; --card-color-2: #10b981; }
+.service-card[data-theme="design"] { --card-color-1: #ec4899; --card-color-2: #a855f7; }
+.service-card[data-theme="dev"] { --card-color-1: #6366f1; --card-color-2: #8b5cf6; }
+.service-card[data-theme="data"] { --card-color-1: #0ea5e9; --card-color-2: #06b6d4; }
+.service-card[data-theme="content"] { --card-color-1: #f43f5e; --card-color-2: #e11d48; }
+.service-card[data-theme="business"] { --card-color-1: #8b5cf6; --card-color-2: #6366f1; }
 
 /* ===== Process ===== */
-.process-steps {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+.process { padding: 100px 0; }
+.process-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
   position: relative;
 }
+.process-grid::before {
+  content: ''; position: absolute; top: 48px; left: 12%; right: 12%; height: 2px;
+  background: linear-gradient(90deg, #6366f1, #0ea5e9, #818cf8, #6366f1);
+  opacity: 0.3;
+}
 .process-step {
-  flex: 1; min-width: 180px; max-width: 220px;
-  text-align: center; padding: 28px 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
+  text-align: center; position: relative; z-index: 1;
 }
-.process-step.visible { opacity: 1; transform: translateY(0); }
-.process-step:hover { border-color: rgba(108,92,231,0.3); }
-.step-num {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: linear-gradient(135deg, #6c5ce7, #4a3aff);
+.step-number {
+  width: 96px; height: 96px; border-radius: 50%; margin: 0 auto 24px;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 1rem; color: #fff;
-  margin: 0 auto 16px;
+  font-size: 1.8rem; font-weight: 800;
+  background: rgba(15,23,42,0.8);
+  border: 2px solid rgba(99,102,241,0.3);
+  color: #818cf8;
 }
-.process-step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-.process-step p { font-size: 0.82rem; color: #7a7a9a; }
-.step-arrow {
-  display: flex; align-items: center; color: #4a3aff;
-  font-size: 1.4rem; padding-top: 10px;
-}
+.step-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.step-desc { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; }
 
-/* ===== Payment ===== */
-.payment-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+/* ===== Why Us ===== */
+.why-us { padding: 100px 0; }
+.why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.why-card {
+  padding: 32px; border-radius: 16px;
+  background: rgba(15,23,42,0.5); border: 1px solid rgba(99,102,241,0.08);
+  text-align: center; transition: transform 0.2s;
 }
-.payment-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  padding: 32px; text-align: center;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
-}
-.payment-card.visible { opacity: 1; transform: translateY(0); }
-.payment-card:hover { border-color: rgba(108,92,231,0.3); }
-.payment-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-.payment-card .pay-info { font-size: 0.85rem; color: #7a7a9a; margin-bottom: 20px; }
-.qr-placeholder {
-  width: 180px; height: 180px; margin: 0 auto 16px;
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem; color: #5a5a7a;
-  border: 2px dashed rgba(108, 92, 231, 0.3);
-  background: rgba(108, 92, 231, 0.05);
-  transition: border-color 0.3s;
-}
-.qr-placeholder:hover { border-color: rgba(108, 92, 231, 0.6); }
-.pay-note { font-size: 0.78rem; color: #5a5a7a; }
+.why-card:hover { transform: translateY(-2px); }
+.why-icon { font-size: 2.4rem; margin-bottom: 16px; }
+.why-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.why-card p { font-size: 0.9rem; color: #94a3b8; }
 
-/* ===== Contact ===== */
-.contact-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
+/* ===== Payment & Contact ===== */
+.contact { padding: 100px 0; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.contact-box {
+  padding: 40px; border-radius: 20px;
+  background: rgba(15,23,42,0.6); border: 1px solid rgba(99,102,241,0.15);
 }
-.contact-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  padding: 32px; text-align: center;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
+.contact-box h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; }
+.payment-methods { display: flex; gap: 16px; margin-bottom: 24px; }
+.payment-item {
+  flex: 1; padding: 20px; border-radius: 12px; text-align: center;
+  background: rgba(30,41,59,0.6); border: 1px solid rgba(148,163,184,0.1);
 }
-.contact-card.visible { opacity: 1; transform: translateY(0); }
-.contact-card:hover { border-color: rgba(108,92,231,0.3); }
-.contact-icon {
-  width: 56px; height: 56px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; margin: 0 auto 16px;
-  background: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(0,210,255,0.1));
+.payment-item .icon { font-size: 2rem; margin-bottom: 8px; }
+.payment-item .name { font-size: 0.95rem; font-weight: 600; }
+.contact-info { list-style: none; }
+.contact-info li {
+  padding: 12px 0; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid rgba(148,163,184,0.08);
+  font-size: 0.95rem;
 }
-.contact-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-.contact-card p { color: #7a7a9a; font-size: 0.9rem; }
-.contact-card .value {
-  font-size: 1.15rem; font-weight: 700;
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff);
+.contact-info li:last-child { border-bottom: none; }
+.contact-info .label { color: #64748b; min-width: 80px; }
+.contact-info .value { color: #e2e8f0; font-weight: 500; }
+
+.cta-box {
+  padding: 48px; border-radius: 20px; text-align: center;
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(14,165,233,0.1));
+  border: 1px solid rgba(99,102,241,0.2);
+}
+.cta-box h3 {
+  font-size: 1.8rem; font-weight: 800; margin-bottom: 12px;
+  background: linear-gradient(135deg, #818cf8, #38bdf8);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-/* ===== CTA Banner ===== */
-.cta-banner {
-  background: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(0,210,255,0.08));
-  border: 1px solid rgba(108,92,231,0.2);
-  border-radius: 24px;
-  padding: 60px 40px;
-  text-align: center;
-  margin: 0 24px;
-  max-width: 1200px;
-  margin-left: auto; margin-right: auto;
+.cta-box p { color: #94a3b8; margin-bottom: 32px; font-size: 1.05rem; }
+.cta-box .wechat-id {
+  display: inline-block; padding: 12px 32px; border-radius: 10px;
+  background: rgba(30,41,59,0.8); border: 1px solid rgba(99,102,241,0.3);
+  font-size: 1.2rem; font-weight: 700; letter-spacing: 1px;
+  color: #22c55e; margin-bottom: 24px;
 }
-.cta-banner h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
-.cta-banner p { color: #7a7a9a; margin-bottom: 28px; }
 
 /* ===== Footer ===== */
-.footer {
-  text-align: center; padding: 40px 24px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  color: #4a4a6a; font-size: 0.82rem;
-  position: relative; z-index: 1;
+footer {
+  padding: 48px 0; text-align: center;
+  border-top: 1px solid rgba(148,163,184,0.08);
+  color: #475569; font-size: 0.85rem;
 }
-.footer a { color: #6c5ce7; text-decoration: none; }
 
 /* ===== Animations ===== */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% center; }
-  50% { background-position: 200% center; }
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.5); }
+.fade-in {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
 
 /* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .nav-links.open {
-    display: flex; flex-direction: column;
-    position: absolute; top: 60px; left: 0; right: 0;
-    background: rgba(10, 10, 26, 0.95);
-    backdrop-filter: blur(16px);
-    padding: 20px 24px; gap: 16px;
-    border-bottom: 1px solid rgba(108,92,231,0.2);
-  }
-  .nav-toggle { display: block; }
-  .hero h1 { font-size: 2rem; }
+@media (max-width: 900px) {
+  .nav-links, .nav-cta { display: none; }
+  .menu-toggle { display: block; }
+  .service-grid { grid-template-columns: 1fr; }
+  .process-grid { grid-template-columns: repeat(2, 1fr); }
+  .process-grid::before { display: none; }
+  .contact-grid { grid-template-columns: 1fr; }
   .hero-stats { gap: 24px; }
-  .hero-stat .num { font-size: 1.5rem; }
-  .services-grid { grid-template-columns: 1fr; }
-  .process-steps { flex-direction: column; align-items: center; }
-  .step-arrow { display: none; }
-  .section { padding: 60px 16px; }
-  .section-title { font-size: 1.6rem; }
-  .cta-banner { padding: 40px 20px; }
-  .cta-banner h2 { font-size: 1.3rem; }
+  .hero-stats .num { font-size: 1.5rem; }
 }
-
-/* ===== Custom Dev Featured Card ===== */
-.service-card.featured {
-  border-color: rgba(108, 92, 231, 0.4);
-  background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(0,210,255,0.05));
-  grid-column: 1 / -1;
-  position: relative;
+@media (max-width: 600px) {
+  .hero { padding: 100px 16px 60px; }
+  .hero-stats { flex-direction: column; gap: 16px; }
+  .process-grid { grid-template-columns: 1fr; gap: 32px; }
+  .payment-methods { flex-direction: column; }
+  .service-card { padding: 28px; }
 }
-.service-card.featured::before {
-  opacity: 1;
-}
-.service-card.featured .service-icon {
-  width: 64px; height: 64px; font-size: 2rem;
-  background: linear-gradient(135deg, rgba(108,92,231,0.25), rgba(0,210,255,0.15));
-}
-.featured-body {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 24px;
-}
-.featured-info { flex: 1; min-width: 280px; }
-.featured-info h3 { font-size: 1.5rem; margin-bottom: 8px; }
-.featured-info p { font-size: 1rem; color: #a0a0c0; margin-bottom: 12px; }
-.featured-tags {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
-}
-.featured-tag {
-  display: inline-block;
-  padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
-  background: rgba(108,92,231,0.12); color: #a78bfa;
-  border: 1px solid rgba(108,92,231,0.2);
-}
-.featured-price-row {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-.featured-price {
-  font-size: 1.8rem; font-weight: 800;
-  background: linear-gradient(135deg, #6c5ce7, #00d2ff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.featured-price span { font-size: 0.9rem; font-weight: 400; }
-.featured-delivery {
-  font-size: 0.9rem; color: #00d2ff; font-weight: 600;
-}
-.btn-cta {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 32px; border-radius: 12px;
-  background: linear-gradient(135deg, #ff6b35, #ff9a56);
-  color: #fff; font-weight: 700; font-size: 1rem;
-  border: none; cursor: pointer; text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.3s;
-  box-shadow: 0 4px 24px rgba(255,107,53,0.4);
-  white-space: nowrap;
-}
-.btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,107,53,0.6); }
-
-/* ===== Business Flow Section ===== */
-.biz-flow-steps {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
-  align-items: center;
-}
-.biz-flow-step {
-  flex: 0 0 auto;
-  text-align: center; padding: 24px 20px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px; min-width: 140px;
-  transition: border-color 0.3s, transform 0.3s;
-}
-.biz-flow-step:hover { border-color: rgba(255,107,53,0.4); transform: translateY(-4px); }
-.biz-flow-step .step-icon { font-size: 1.8rem; margin-bottom: 8px; }
-.biz-flow-step h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-.biz-flow-step p { font-size: 0.78rem; color: #7a7a9a; }
-.biz-flow-arrow {
-  font-size: 1.4rem; color: rgba(108,92,231,0.5);
-  flex: 0 0 auto;
-}
-@media (max-width: 768px) {
-  .biz-flow-steps { flex-direction: column; align-items: center; }
-  .biz-flow-arrow { transform: rotate(90deg); }
-  .featured-body { flex-direction: column; text-align: center; }
-  .featured-tags { justify-content: center; }
-  .featured-price-row { justify-content: center; }
-  .service-card.featured { grid-column: auto; }
-}
-
-/* ===== Contact Modal ===== */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-  justify-content: center; align-items: center;
-}
-.modal-overlay.active { display: flex; }
-.modal-box {
-  background: #14142a; border: 1px solid rgba(108,92,231,0.3);
-  border-radius: 24px; padding: 40px 36px; max-width: 420px; width: 90%;
-  text-align: center; position: relative;
-  animation: fadeInUp 0.4s ease;
-}
-.modal-close {
-  position: absolute; top: 16px; right: 20px;
-  background: none; border: none; color: #7a7a9a; font-size: 1.5rem;
-  cursor: pointer; transition: color 0.3s;
-}
-.modal-close:hover { color: #fff; }
-.modal-box h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
-.modal-box p { color: #7a7a9a; font-size: 0.9rem; margin-bottom: 24px; }
-.modal-contact-item {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 20px; margin-bottom: 12px;
-  background: rgba(255,255,255,0.04); border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.modal-contact-item .micon { font-size: 1.5rem; }
-.modal-contact-item .mlabel { font-size: 0.8rem; color: #7a7a9a; }
-.modal-contact-item .mvalue { font-size: 1.1rem; font-weight: 700; color: #00d2ff; }
-
 </style>
 </head>
 <body>
 
-<!-- Particles Background -->
-<canvas id="particles-canvas"></canvas>
+<!-- Background Effects -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow-2"></div>
+
+<div class="content-wrap">
 
 <!-- Navigation -->
-<nav class="nav" id="nav">
-  <div class="nav-logo">AI<span style="color:#00d2ff">Dev</span> Studio</div>
-  <div class="nav-links" id="navLinks">
-    <a href="#tools">免费工具</a><a href="#services">服务项目</a>
-    <a href="#biz-flow">商单流程</a>
-    <a href="#process">工作流程</a>
-    <a href="#payment">收款方式</a>
-    <a href="#contact">联系我们</a>
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo">AI事务所</div>
+    <div class="nav-links">
+      <a href="#services">服务项目</a>
+      <a href="#process">服务流程</a>
+      <a href="#why">为什么选我们</a>
+      <a href="#contact">联系咨询</a>
+    </div>
+    <a href="#contact" class="nav-cta">立即咨询</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
   </div>
-  <button class="nav-toggle" id="navToggle" aria-label="菜单">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
 
-<!-- Hero -->
-<section class="hero" id="hero">
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" onclick="closeMenu()">服务项目</a>
+  <a href="#process" onclick="closeMenu()">服务流程</a>
+  <a href="#why" onclick="closeMenu()">为什么选我们</a>
+  <a href="#contact" onclick="closeMenu()">联系咨询</a>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span> AI Agent 全天候在线接单</div>
-    <h1>AI帮你<span class="gradient-text">写代码·建网站·做小程序</span></h1>
-    <p>7×24小时自动接单，按需付费，从需求到交付全程AI驱动</p>
-    <div class="hero-buttons">
-      <a href="#contact" class="btn-primary">立即提交需求</a>
-      <a href="#services" class="btn-secondary">查看服务项目</a>
+    <div class="hero-badge"><span class="dot"></span> 全天候在线 · 随时响应</div>
+    <h1><span class="gradient-text">AI全能事务所</span></h1>
+    <p>一个AI，七种专业能力，24小时在线<br>从法律文书到软件开发，从数据分析到创意设计，一站式AI专业服务</p>
+    <div class="hero-actions">
+      <a href="#services" class="btn-primary">浏览全部服务</a>
+      <a href="#contact" class="btn-outline">微信咨询</a>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="num">7×24</div><div class="label">全天在线</div></div>
-      <div class="hero-stat"><div class="num">7+</div><div class="label">服务类别</div></div>
-      <div class="hero-stat"><div class="num">¥29</div><div class="label">起步价</div></div>
+      <div class="hero-stat"><div class="num">7</div><div class="label">专业领域</div></div>
+      <div class="hero-stat"><div class="num">25+</div><div class="label">服务项目</div></div>
+      <div class="hero-stat"><div class="num">24h</div><div class="label">在线响应</div></div>
     </div>
   </div>
 </section>
 
+<!-- Services Section -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>七大专业领域，全面覆盖</h2>
+      <p>不再局限于低端服务，AI的能力远超你的想象</p>
+    </div>
+    <div class="service-grid">
 
-<!-- Free AI Tools -->
-<section class="section" id="tools">
-  <div class="section-label">Free Tools</div>
-  <h2 class="section-title">免费AI工具</h2>
-  <p class="section-desc">即刻体验，无需注册，完全免费</p>
-  <div class="free-tools-grid">
-    <a href="tools/resume-optimizer/index.html" class="free-tool-card" target="_blank">
-      <div class="free-tool-icon">📋</div>
-      <h3>AI简历优化器</h3>
-      <p>粘贴简历，AI秒出评分+优化建议+优化版简历</p>
-      <span class="free-tool-badge">免费使用 →</span>
-    </a>
-    <a href="tools/ai-copywriter/index.html" class="free-tool-card" target="_blank">
-      <div class="free-tool-icon">✍️</div>
-      <h3>AI文案生成器</h3>
-      <p>小红书/电商/朋友圈/抖音文案，一键生成3个版本</p>
-      <span class="free-tool-badge">免费使用 →</span>
-    </a>
-    <a href="tools/ai-ppt-generator/index.html" class="free-tool-card" target="_blank">
-      <div class="free-tool-icon">📊</div>
-      <h3>AI PPT生成器</h3>
-      <p>输入主题，AI自动生成完整PPT大纲和内容</p>
-      <span class="free-tool-badge">免费使用 →</span>
-    </a>
+      <!-- Legal -->
+      <div class="service-card fade-in" data-theme="legal">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title">法律服务</div>
+        <ul class="service-list">
+          <li>合同起草与审查</li>
+          <li>法律文书撰写（起诉状/答辩状/律师函）</li>
+          <li>法律咨询意见书</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥200 - ¥2,000</span></div>
+      </div>
+
+      <!-- Medical -->
+      <div class="service-card fade-in" data-theme="medical">
+        <div class="card-icon">🏥</div>
+        <div class="card-title">医疗健康</div>
+        <ul class="service-list">
+          <li>健康咨询与科普报告</li>
+          <li>医学文献综述</li>
+          <li>健康管理方案</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥100 - ¥800</span></div>
+      </div>
+
+      <!-- Design -->
+      <div class="service-card fade-in" data-theme="design">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">设计创意</div>
+        <ul class="service-list">
+          <li>品牌VI设计（Logo+色彩+字体方案）</li>
+          <li>社交媒体海报/封面设计</li>
+          <li>产品主图设计</li>
+          <li>3D数据可视化</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥150 - ¥3,000</span></div>
+      </div>
+
+      <!-- Dev -->
+      <div class="service-card fade-in" data-theme="dev">
+        <div class="card-icon">💻</div>
+        <div class="card-title">软件开发</div>
+        <ul class="service-list">
+          <li>网站开发（企业官网/落地页/商城）</li>
+          <li>自动化脚本定制</li>
+          <li>数据爬取与分析</li>
+          <li>Chrome插件开发</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥500 - ¥5,000</span></div>
+      </div>
+
+      <!-- Data -->
+      <div class="service-card fade-in" data-theme="data">
+        <div class="card-icon">📊</div>
+        <div class="card-title">数据分析</div>
+        <ul class="service-list">
+          <li>Excel数据分析报告</li>
+          <li>机器学习建模</li>
+          <li>可视化图表制作（2D/3D）</li>
+          <li>行业调研报告 / 竞品分析报告</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥300 - ¥3,000</span></div>
+      </div>
+
+      <!-- Content -->
+      <div class="service-card fade-in" data-theme="content">
+        <div class="card-icon">✍️</div>
+        <div class="card-title">内容创作</div>
+        <ul class="service-list">
+          <li>公众号/小红书/抖音文案</li>
+          <li>学术论文辅助（文献搜索+综述+引用分析）</li>
+          <li>SEO文章</li>
+          <li>品牌故事/公司简介</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥100 - ¥1,500</span></div>
+      </div>
+
+      <!-- Business -->
+      <div class="service-card fade-in" data-theme="business">
+        <div class="card-icon">📋</div>
+        <div class="card-title">商务文书</div>
+        <ul class="service-list">
+          <li>PPT演示文稿</li>
+          <li>商业计划书</li>
+          <li>可行性分析报告</li>
+          <li>会议纪要整理</li>
+        </ul>
+        <div class="card-price">起步价 <span>¥100 - ¥2,000</span></div>
+      </div>
+
+    </div>
   </div>
 </section>
 
-<!-- Services -->
-<section class="section" id="services">
-  <div class="section-label">Services</div>
-  <h2 class="section-title">服务项目</h2>
-  <p class="section-desc">涵盖从开发到设计的全方位AI服务，按需选择，灵活付费</p>
-  <div class="services-grid">
-    <div class="service-card featured" data-delay="0">
-      <div class="featured-body">
-        <div class="service-icon">🚀</div>
-        <div class="featured-info">
-          <h3>🚀 定制开发服务</h3>
-          <p>专业网站/App/小程序开发，AI驱动快速交付</p>
-          <div class="featured-tags">
-            <span class="featured-tag">企业官网</span>
-            <span class="featured-tag">小程序开发</span>
-            <span class="featured-tag">App开发</span>
-            <span class="featured-tag">H5活动页</span>
-            <span class="featured-tag">管理后台</span>
-            <span class="featured-tag">API开发</span>
+<!-- Process Section -->
+<section class="process" id="process">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>简单四步，高效交付</h2>
+      <p>标准化流程，确保每个项目按时按质完成</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-step fade-in">
+        <div class="step-number">01</div>
+        <div class="step-title">需求沟通</div>
+        <div class="step-desc">微信详述您的需求，我们理解确认并给出初步方案</div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-number">02</div>
+        <div class="step-title">方案报价</div>
+        <div class="step-desc">明确交付物、时间节点和费用，无隐藏收费</div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-number">03</div>
+        <div class="step-title">执行交付</div>
+        <div class="step-desc">AI高效执行，过程可跟进，交付成品文件</div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-number">04</div>
+        <div class="step-title">售后支持</div>
+        <div class="step-desc">合理修改免费调整，确保满意为止</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Us Section -->
+<section class="why-us" id="why">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>为什么选择我们</h2>
+      <p>AI赋能，降本增效，专业可靠</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card fade-in">
+        <div class="why-icon">⚡</div>
+        <h3>极速交付</h3>
+        <p>AI 24小时在线，多数项目24小时内交付，紧急需求加急处理</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">💰</div>
+        <h3>超高性价比</h3>
+        <p>同等质量下价格仅为传统服务的1/5至1/10</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">🎯</div>
+        <h3>专业精准</h3>
+        <p>七大专领域能力，每个领域都达到专业水准</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">🔄</div>
+        <h3>免费修改</h3>
+        <p>交付后合理修改免费调整，确保您100%满意</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>开始您的项目</h2>
+      <p>添加微信，告诉我您的需求</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-box fade-in">
+        <h3>💳 收款方式</h3>
+        <div class="payment-methods">
+          <div class="payment-item">
+            <div class="icon">🔵</div>
+            <div class="name">支付宝</div>
           </div>
-          <div class="featured-price-row">
-            <div class="featured-price">¥500 <span>起</span></div>
-            <div class="featured-delivery">⚡ 3天交付</div>
-            <button class="btn-cta" onclick="openContactModal()">立即咨询</button>
+          <div class="payment-item">
+            <div class="icon">🟢</div>
+            <div class="name">微信支付</div>
           </div>
         </div>
+        <ul class="contact-info">
+          <li><span class="label">微信号</span><span class="value">hutianci001</span></li>
+          <li><span class="label">服务时间</span><span class="value">7×24小时在线</span></li>
+          <li><span class="label">响应时效</span><span class="value">10分钟内回复</span></li>
+        </ul>
       </div>
-    </div>
-    
-    <div class="service-card" data-delay="200">
-      <div class="service-icon">🌐</div>
-      <h3>网站开发</h3>
-      <p>企业官网、落地页、H5活动页、响应式网站，AI自动生成代码并部署</p>
-      <div class="service-price">¥299 <span>起</span></div>
-    </div>
-    <div class="service-card" data-delay="200">
-      <div class="service-icon">📱</div>
-      <h3>小程序开发</h3>
-      <p>微信小程序、支付宝小程序，从UI到接口一站式AI交付</p>
-      <div class="service-price">¥499 <span>起</span></div>
-    </div>
-    <div class="service-card" data-delay="300">
-      <div class="service-icon">🚀</div>
-      <h3>App开发</h3>
-      <p>跨平台App开发，Flutter/React Native方案，AI生成完整项目</p>
-      <div class="service-price">¥999 <span>起</span></div>
-    </div>
-    <div class="service-card" data-delay="400">
-      <div class="service-icon">🤖</div>
-      <h3>AI工具定制</h3>
-      <p>聊天机器人、数据分析工具、自动化脚本，按场景定制AI能力</p>
-      <div class="service-price">¥199 <span>起</span></div>
-    </div>
-    <div class="service-card" data-delay="500">
-      <div class="service-icon">📊</div>
-      <h3>PPT设计</h3>
-      <p>商业路演、产品汇报、培训课件，AI一键生成专业级演示文稿</p>
-      <div class="service-price">¥49 <span>起</span></div>
-    </div>
-    <div class="service-card" data-delay="600">
-      <div class="service-icon">✍️</div>
-      <h3>文案代写</h3>
-      <p>产品文案、推广软文、公告通知、邮件模板，AI精准生成</p>
-      <div class="service-price">¥29 <span>起</span></div>
+      <div class="cta-box fade-in">
+        <h3>扫码添加微信</h3>
+        <p>或搜索微信号，备注"AI服务咨询"</p>
+        <div class="wechat-id">hutianci001</div>
+        <p style="font-size:0.9rem;color:#64748b;">复制微信号 → 打开微信 → 添加朋友 → 粘贴搜索</p>
+        <a href="#services" class="btn-primary" style="display:inline-block;margin-top:20px;">查看服务详情</a>
+      </div>
     </div>
   </div>
 </section>
-
-
-<!-- Business Flow -->
-<section class="section" id="biz-flow">
-  <div class="section-label">Business Flow</div>
-  <h2 class="section-title">商单流程</h2>
-  <p class="section-desc">从需求到上线，5步高效交付，省心省力</p>
-  <div class="biz-flow-steps">
-    <div class="biz-flow-step">
-      <div class="step-icon">💬</div>
-      <h4>需求沟通</h4>
-      <p>详细描述项目需求</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">📋</div>
-      <h4>方案报价</h4>
-      <p>10分钟内给出方案</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">💳</div>
-      <h4>确认付款</h4>
-      <p>确认方案后扫码支付</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">⚙️</div>
-      <h4>开发交付</h4>
-      <p>AI高效开发，进度可查</p>
-    </div>
-    <div class="biz-flow-arrow">→</div>
-    <div class="biz-flow-step">
-      <div class="step-icon">🚀</div>
-      <h4>验收上线</h4>
-      <p>测试验收，满意交付</p>
-    </div>
-  </div>
-</section>
-
-<!-- Process -->
-<section class="section" id="process">
-  <div class="section-label">Workflow</div>
-  <h2 class="section-title">工作流程</h2>
-  <p class="section-desc">5步完成从需求到交付，全程透明可控</p>
-  <div class="process-steps">
-    <div class="process-step" data-delay="0">
-      <div class="step-num">1</div>
-      <h4>提交需求</h4>
-      <p>通过微信或电话描述您的开发需求</p>
-    </div>
-    <div class="step-arrow">→</div>
-    <div class="process-step" data-delay="150">
-      <div class="step-num">2</div>
-      <h4>AI评估报价</h4>
-      <p>AI自动分析需求，10分钟内给出报价</p>
-    </div>
-    <div class="step-arrow">→</div>
-    <div class="process-step" data-delay="300">
-      <div class="step-num">3</div>
-      <h4>确认付款</h4>
-      <p>确认方案和价格后，扫码支付</p>
-    </div>
-    <div class="step-arrow">→</div>
-    <div class="process-step" data-delay="450">
-      <div class="step-num">4</div>
-      <h4>AI开发交付</h4>
-      <p>AI全自动开发，实时进度可查</p>
-    </div>
-    <div class="step-arrow">→</div>
-    <div class="process-step" data-delay="600">
-      <div class="step-num">5</div>
-      <h4>验收满意</h4>
-      <p>交付成果，不满意可修改至满意</p>
-    </div>
-  </div>
-</section>
-
-<!-- Payment -->
-<section class="section" id="payment">
-  <div class="section-label">Payment</div>
-  <h2 class="section-title">收款方式</h2>
-  <p class="section-desc">支持支付宝和微信支付，扫码即付，安全便捷</p>
-  <div class="payment-grid">
-    <div class="payment-card" data-delay="0">
-      <h3>支付宝</h3>
-      <p class="pay-info">收款主体：枞阳县昌胜物资回收有限公司</p>
-      <div class="qr-placeholder">
-        支付宝收款码<br>（待上传）
-      </div>
-      <p class="pay-note">请扫码支付后截图发给客服</p>
-    </div>
-    <div class="payment-card" data-delay="150">
-      <h3>微信支付</h3>
-      <p class="pay-info">微信号：hutianci001</p>
-      <div class="qr-placeholder">
-        微信收款码<br>（待上传）
-      </div>
-      <p class="pay-note">请扫码支付后截图发给客服</p>
-    </div>
-  </div>
-</section>
-
-<!-- Contact -->
-<section class="section" id="contact">
-  <div class="section-label">Contact</div>
-  <h2 class="section-title">联系我们</h2>
-  <p class="section-desc">有任何需求或疑问，随时联系天赐，7×24小时在线响应</p>
-  <div class="contact-grid">
-    <div class="contact-card" data-delay="0">
-      <div class="contact-icon">💬</div>
-      <h3>微信咨询</h3>
-      <p>扫码或搜索微信号添加好友</p>
-      <div class="value">hutianci001</div>
-    </div>
-    <div class="contact-card" data-delay="150">
-      <div class="contact-icon">📞</div>
-      <h3>电话咨询</h3>
-      <p>工作日 9:00 - 21:00</p>
-      <div class="value">18256264479</div>
-    </div>
-    <div class="contact-card" data-delay="300">
-      <div class="contact-icon">👤</div>
-      <h3>联系人</h3>
-      <p>专属客服，1对1服务</p>
-      <div class="value">天赐</div>
-    </div>
-  </div>
-</section>
-
-
-<!-- Contact Modal -->
-<div class="modal-overlay" id="contactModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeContactModal()">&times;</button>
-    <h3>🚀 立即咨询</h3>
-    <p>添加微信，10分钟内响应您的需求</p>
-    <div class="modal-contact-item">
-      <div class="micon">💬</div>
-      <div>
-        <div class="mlabel">微信号</div>
-        <div class="mvalue">hutianci001</div>
-      </div>
-    </div>
-    <div class="modal-contact-item">
-      <div class="micon">📞</div>
-      <div>
-        <div class="mlabel">电话咨询</div>
-        <div class="mvalue">18256264479</div>
-      </div>
-    </div>
-    <a href="#contact" class="btn-primary" style="margin-top:16px;display:inline-flex" onclick="closeContactModal()">查看更多联系方式 →</a>
-  </div>
-</div>
-
-<!-- CTA Banner -->
-<div class="cta-banner">
-  <h2>准备好让AI帮你完成开发了吗？</h2>
-  <p>提交需求，最快10分钟获得报价，当天即可交付</p>
-  <a href="#contact" class="btn-primary">立即联系天赐</a>
-</div>
 
 <!-- Footer -->
-<footer class="footer">
-  <p>&copy; 2026 AI Dev Studio · AI智能开发服务平台 · 联系人：天赐</p>
-  <p style="margin-top:8px;">备案号：<span style="color:#4a4a6a;">ICP备XXXXXXXX号</span>（占位）</p>
+<footer>
+  <div class="container">
+    <p>© 2025 AI全能事务所 · 专注AI专业服务 · 所有权利保留</p>
+  </div>
 </footer>
 
+</div>
+
+<!-- Scripts -->
 <script>
-// ===== Particles Background =====
-(function() {
-  const canvas = document.getElementById('particles-canvas');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  const PARTICLE_COUNT = 60;
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  class Particle {
-    constructor() { this.reset(); }
-    reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
-      this.size = Math.random() * 2 + 0.5;
-      this.speedX = (Math.random() - 0.5) * 0.4;
-      this.speedY = (Math.random() - 0.5) * 0.4;
-      this.opacity = Math.random() * 0.5 + 0.1;
-    }
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-    }
-    draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(108, 92, 231,' + this.opacity + ')';
-      ctx.fill();
-    }
-  }
-
-  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-
-  function connectParticles() {
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 150) {
-          ctx.beginPath();
-          ctx.strokeStyle = 'rgba(108, 92, 231,' + (0.08 * (1 - dist / 150)) + ')';
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
-    connectParticles();
-    requestAnimationFrame(animate);
-  }
-  animate();
-})();
-
-// ===== Scroll Animations =====
-(function() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const delay = parseInt(entry.target.dataset.delay) || 0;
-        setTimeout(() => entry.target.classList.add('visible'), delay);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  document.querySelectorAll('.service-card, .process-step, .payment-card, .contact-card').forEach(el => {
-    observer.observe(el);
-  });
-})();
-
-// ===== Nav Scroll Effect =====
-(function() {
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  });
-})();
-
-// ===== Mobile Menu Toggle =====
-(function() {
-  const toggle = document.getElementById('navToggle');
-  const links = document.getElementById('navLinks');
-  toggle.addEventListener('click', () => links.classList.toggle('open'));
-  links.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => links.classList.remove('open'));
-  });
-})();
-
-
-// ===== Contact Modal =====
-function openContactModal() {
-  document.getElementById('contactModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeContactModal() {
-  document.getElementById('contactModal').classList.remove('active');
-  document.body.style.overflow = '';
-}
-document.getElementById('contactModal').addEventListener('click', function(e) {
-  if (e.target === this) closeContactModal();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeContactModal();
+// Nav scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
 });
 
-// ===== Smooth Scroll =====
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', (e) => {
+// Mobile menu
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+menuToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('active');
+});
+function closeMenu() {
+  mobileMenu.classList.remove('active');
+}
+
+// Scroll animations
+const fadeEls = document.querySelectorAll('.fade-in');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, index) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, index * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+fadeEls.forEach(el => observer.observe(el));
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
     e.preventDefault();
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 });
 </script>
+
 </body>
 </html>
